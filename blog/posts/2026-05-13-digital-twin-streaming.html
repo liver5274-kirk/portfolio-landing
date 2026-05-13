@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin 與 Kit App Streaming 應用 — Kirk.dev 技術部落格</title>
+  <meta name="description" content="Digital Twin 與 Kit App Streaming 應用 — Kirk 的技術筆記與開發心得。全端開發、AI 自動化、量化交易、3D 圖學。">
+  <meta property="og:title" content="Digital Twin 與 Kit App Streaming 應用">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-digital-twin-streaming.html">
+  <link rel="canonical" href="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-digital-twin-streaming.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── 文章內容排版 ── */
+    .prose { max-width: 65ch; }
+    .prose h1 { font-size: 2rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; color: #e2e8f0; }
+    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; color: #e2e8f0; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; }
+    .prose h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+    .prose a { color: #47c07b; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #7cd9a2; }
+    .prose strong { color: #e2e8f0; font-weight: 600; }
+    .prose code { background: #1e293b; color: #7cd9a2; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .prose pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+    .prose pre code { background: none; color: #cbd5e1; padding: 0; font-size: 0.85rem; line-height: 1.6; }
+    .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; color: #94a3b8; }
+    .prose li { margin-bottom: 0.35rem; line-height: 1.65; }
+    .prose blockquote { border-left: 3px solid #22a55e; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(34,165,94,0.05); border-radius: 0 6px 6px 0; }
+    .prose blockquote p { color: #94a3b8; margin: 0; }
+    .prose hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .prose th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #1e293b; color: #94a3b8; }
+    .prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    /* ── Callout ── */
+    .callout { border-left-width: 3px; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .callout-note { background: rgba(59,130,246,0.08); border-color: #3b82f6; }
+    .callout-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+    .callout-tip { background: rgba(34,197,94,0.08); border-color: #22c55e; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: #06b6d4; }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+    .callout-example { background: rgba(139,92,246,0.08); border-color: #8b5cf6; }
+    .callout-header { font-weight: 600; margin-bottom: 0.35rem; color: #cbd5e1; }
+    .callout-body p { margin: 0; }
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 0.15em 0.6em; font-size: 0.75rem; background: #0f172a; color: #47c07b; border: 1px solid #1e293b; border-radius: 999px; margin-right: 0.35rem; }
+    /* ── Back link ── */
+    .back-link { color: #64748b; font-size: 0.85rem; }
+    .back-link:hover { color: #47c07b; }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/" class="text-brand-400 font-bold text-lg tracking-tight no-underline">Kirk<span class="text-slate-400 font-normal">.dev</span></a>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#works" class="hover:text-brand-400 transition no-underline">作品</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#skills" class="hover:text-brand-400 transition no-underline">技能</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="text-brand-400 transition no-underline">部落格</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="hover:text-brand-400 transition no-underline">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="pt-28 pb-20 px-6 max-w-3xl mx-auto">
+  <header class="mb-10">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="back-link mb-4 inline-block">← 所有文章</a>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100 mb-3">Digital Twin 與 Kit App Streaming 應用</h1>
+    <div class="flex items-center gap-4 text-sm text-slate-500">
+      <span>2026-05-13</span>
+      <span>·</span>
+      <span>Kirk</span>
+    </div>
+    <div class="mt-3"><span class="tag">Omniverse</span><span class="tag">Digital Twin</span><span class="tag">NVIDIA</span><span class="tag">3D</span></div>
+  </header>
+
+  <div class="prose">
+<h1>Lesson 05 — Digital Twin 應用：Kit App Streaming</h1>
+<blockquote>
+<p>- Extend Omniverse Kit Applications for Building Digital Twins (2h, Free)</p>
+<p>- Building and Deploying Digital Twin Applications With Omniverse Kit App Streaming (1.5h, $30)</p>
+<p>來源：docs.omniverse.nvidia.com</p>
+</blockquote>
+<hr>
+<h2>什麼是數位孿生（Digital Twin）？</h2>
+<blockquote>
+</blockquote>
+<p>在 Omniverse 脈絡下，Digital Twin 的技術堆疊：</p>
+<pre><code>┌────────────────────────────────────┐
+│      App Streaming (Web Client)    │  ← 使用者在瀏覽器中操作
+├────────────────────────────────────┤
+│      Kit Application               │  ← Omniverse 應用
+│       ├── USD Scene Graph          │  ← 場景資料
+│       ├── RTX Renderer             │  ← 即時光追渲染
+│       └── Physics / Sensors        │  ← 物理模擬
+├────────────────────────────────────┤
+│      Omniverse Nucleus             │  ← 協作伺服器
+├────────────────────────────────────┤
+│      Data Connectors               │  ← IoT / CAD / 感測器
+│      (PTC, Siemens, Autodesk...)   │
+└────────────────────────────────────┘</code></pre>
+<hr>
+<h2>Kit App Streaming 架構</h2>
+<h3>核心概念</h3>
+<p>Kit App Streaming 讓 Omniverse 應用跑在雲端 GPU，透過 <strong>WebRTC</strong> 串流到瀏覽器：</p>
+<pre><code>[GPU 伺服器] ──WebRTC──→ [使用者瀏覽器]
+    │                        │
+  渲染 + 物理               鍵盤/滑鼠輸入
+  USD 場景操作               低延遲互動</code></pre>
+<h3>優勢</h3>
+<ul>
+<li>不需要本機 RTX GPU</li>
+<li>瀏覽器即可操作（Chrome/Edge）</li>
+<li>適合企業內部部署</li>
+<li>支援多用戶同時檢視（類似 Google Docs）</li>
+</ul>
+<h3>部署模式</h3>
+<table>
+<thead><tr><th>模式</th><th>說明</th></tr></thead>
+<tbody>
+<tr><td><strong>Local Streaming</strong></td><td>本機 GPU 渲染，串流到同網路其他裝置</td></tr>
+<tr><td><strong>Cloud Streaming</strong></td><td>AWS/Azure 上的 GPU VM，WebRTC 串流</td></tr>
+<tr><td><strong>Omniverse Cloud</strong></td><td>NVIDIA 託管（付費）</td></tr>
+</tbody></table>
+<hr>
+<h2>建立 Streaming App</h2>
+<h3>Step 1: 建立 Kit App</h3>
+<pre><code class="language-bash"># 建立 App 設定檔
+mkdir my_digital_twin
+cat &gt; my_digital_twin/my_app.kit &lt;&lt; 'EOF'
+[settings]
+app/exts/omni.kit.window.streaming.enabled = true
+app/exts/omni.kit.window.streaming.port = 8111
+
+# 啟用必要 Extension
+[extensions]
+omni.kit.window.viewport = {}
+omni.kit.window.streaming = {}
+omni.usd.schema.streaming = {}
+EOF</code></pre>
+<h3>Step 2: 啟動 Streaming Server</h3>
+<pre><code class="language-python">import omni.kit.streaming
+
+# 啟動 WebRTC streaming
+streaming = omni.kit.streaming.get_streaming_interface()
+streaming.start_server(port=8111)
+
+# 取得連線 URL
+url = streaming.get_viewer_url()
+print(f"Open in browser: {url}")</code></pre>
+<h3>Step 3: 設定 Nucleus 協作</h3>
+<pre><code class="language-toml"># extension.toml
+[settings]
+# Nucleus 伺服器位置
+app/exts/omni.kit.window.streaming/nucleus_server = "omniverse://my-server.com"
+
+# 允許多用戶編輯
+app/exts/omni.kit.window.streaming/multi_user = true</code></pre>
+<hr>
+<h2>Digital Twin 資料流</h2>
+<h3>IoT 整合</h3>
+<pre><code class="language-python">import omni.client
+import asyncio
+import json
+
+class IoTConnector:
+    """從 IoT 裝置接收資料更新 Digital Twin"""
+
+    def __init__(self, stage):
+        self._stage = stage
+
+    async def connect_mqtt(self, broker_url: str, topic: str):
+        # 使用 MQTT 接收感測器資料
+        # 生產環境建議用 omni.iot 或自架 MQTT client
+        pass
+
+    def update_twin(self, sensor_id: str, value: float):
+        """更新 Digital Twin 中的感測器數值"""
+        prim_path = f"/World/Sensors/{sensor_id}"
+        prim = self._stage.GetPrimAtPath(prim_path)
+        if prim:
+            prim.GetAttribute("sensor:value").Set(value)</code></pre>
+<h3>CAD 匯入</h3>
+<pre><code class="language-python">import omni.client
+import omni.usd
+
+# 從 Nucleus 匯入 CAD 檔案
+def import_cad(nucleus_path: str):
+    """從 Omniverse Nucleus 匯入 CAD 資產"""
+    result = omni.client.copy(
+        nucleus_path,
+        "omniverse://localhost/Projects/MyProject/cad_models/"
+    )
+    # 支援格式：.usd, .usda, .usdc, .fbx, .obj, .step, .iges</code></pre>
+<hr>
+<h2>常見 Digital Twin 場景</h2>
+<h3>工廠數位孿生</h3>
+<pre><code>┌──────────────────────────────────────┐
+│  即時產線監控                         │
+│  ├── PLC 資料 → MQTT → USD Attributes │
+│  ├── 設備狀態顏色 (綠/黃/紅)           │
+│  └── OEE 計算面板                     │
+└──────────────────────────────────────┘</code></pre>
+<p>關鍵 Extension：</p>
+<ul>
+<li><code>omni.iot.sensors</code> — IoT 感測器串接</li>
+<li><code>omni.kit.widget.live_session</code> — 多人協作</li>
+<li><code>omni.kit.window.filepicker</code> — Nucleus 檔案管理</li>
+</ul>
+<h3>建築數位孿生</h3>
+<pre><code>┌──────────────────────────────────────┐
+│  BIM 模型 + 即時 HVAC 監控            │
+│  ├── Revit/AutoCAD → USD 轉換         │
+│  ├── 能耗/溫度/濕度感測器疊加         │
+│  └── 空間利用率分析                   │
+└──────────────────────────────────────┘</code></pre>
+<hr>
+<h2>App Streaming 效能考量</h2>
+<table>
+<thead><tr><th>因素</th><th>建議</th></tr></thead>
+<tbody>
+<tr><td>GPU</td><td>RTX A5000 以上 (多用戶並發)</td></tr>
+<tr><td>VRAM</td><td>24GB+（複雜場景）</td></tr>
+<tr><td>頻寬</td><td>每用戶 10-25 Mbps（1080p）</td></tr>
+<tr><td>延遲</td><td>< 50ms（WebRTC）</td></tr>
+<tr><td>最大用戶數</td><td>依 GPU 效能，約 4-8/GPU</td></tr>
+</tbody></table>
+<h3>Streaming Settings Tuning</h3>
+<pre><code class="language-python">import omni.kit.streaming
+
+streaming = omni.kit.streaming.get_streaming_interface()
+streaming.set_quality_preset("balanced")  # low / balanced / high
+streaming.set_max_fps(30)
+streaming.set_resolution(1920, 1080)
+streaming.set_bitrate(15000000)  # 15 Mbps</code></pre>
+<hr>
+<h2>學習檢查</h2>
+<ul>
+<li>[ ] Digital Twin 的技術堆疊有哪些層？</li>
+<li>[ ] Kit App Streaming 用什麼協定串流？</li>
+<li>[ ] 如何從 IoT 裝置更新 USD 場景中的數值？</li>
+<li>[ ] Streaming 單 GPU 大約支援多少並發用戶？</li>
+<li>[ ] 設計一個簡單的 Digital Twin 場景架構</li>
+</ul>
+<hr>
+<p>下一課：<a href="../nvidia-omniverse/06-isaac-sim-ros.md" target="_blank" rel="noopener">Lesson 06 — Isaac Sim + ROS 機器人模擬</a></p>
+  </div>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-sm text-slate-600 space-y-2">
+    <p>© 2026 Kirk — 全端開發 × AI 自動化</p>
+    <p>有專案想法？<a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="text-brand-400">聯絡我</a></p>
+  </footer>
+</article>
+
+</body>
+</html>

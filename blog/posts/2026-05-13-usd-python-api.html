@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USD Python API 深入實戰 — Kirk.dev 技術部落格</title>
+  <meta name="description" content="USD Python API 深入實戰 — Kirk 的技術筆記與開發心得。全端開發、AI 自動化、量化交易、3D 圖學。">
+  <meta property="og:title" content="USD Python API 深入實戰">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-usd-python-api.html">
+  <link rel="canonical" href="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-usd-python-api.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── 文章內容排版 ── */
+    .prose { max-width: 65ch; }
+    .prose h1 { font-size: 2rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; color: #e2e8f0; }
+    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; color: #e2e8f0; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; }
+    .prose h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+    .prose a { color: #47c07b; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #7cd9a2; }
+    .prose strong { color: #e2e8f0; font-weight: 600; }
+    .prose code { background: #1e293b; color: #7cd9a2; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .prose pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+    .prose pre code { background: none; color: #cbd5e1; padding: 0; font-size: 0.85rem; line-height: 1.6; }
+    .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; color: #94a3b8; }
+    .prose li { margin-bottom: 0.35rem; line-height: 1.65; }
+    .prose blockquote { border-left: 3px solid #22a55e; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(34,165,94,0.05); border-radius: 0 6px 6px 0; }
+    .prose blockquote p { color: #94a3b8; margin: 0; }
+    .prose hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .prose th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #1e293b; color: #94a3b8; }
+    .prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    /* ── Callout ── */
+    .callout { border-left-width: 3px; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .callout-note { background: rgba(59,130,246,0.08); border-color: #3b82f6; }
+    .callout-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+    .callout-tip { background: rgba(34,197,94,0.08); border-color: #22c55e; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: #06b6d4; }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+    .callout-example { background: rgba(139,92,246,0.08); border-color: #8b5cf6; }
+    .callout-header { font-weight: 600; margin-bottom: 0.35rem; color: #cbd5e1; }
+    .callout-body p { margin: 0; }
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 0.15em 0.6em; font-size: 0.75rem; background: #0f172a; color: #47c07b; border: 1px solid #1e293b; border-radius: 999px; margin-right: 0.35rem; }
+    /* ── Back link ── */
+    .back-link { color: #64748b; font-size: 0.85rem; }
+    .back-link:hover { color: #47c07b; }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/" class="text-brand-400 font-bold text-lg tracking-tight no-underline">Kirk<span class="text-slate-400 font-normal">.dev</span></a>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#works" class="hover:text-brand-400 transition no-underline">作品</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#skills" class="hover:text-brand-400 transition no-underline">技能</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="text-brand-400 transition no-underline">部落格</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="hover:text-brand-400 transition no-underline">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="pt-28 pb-20 px-6 max-w-3xl mx-auto">
+  <header class="mb-10">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="back-link mb-4 inline-block">← 所有文章</a>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100 mb-3">USD Python API 深入實戰</h1>
+    <div class="flex items-center gap-4 text-sm text-slate-500">
+      <span>2026-05-13</span>
+      <span>·</span>
+      <span>Kirk</span>
+    </div>
+    <div class="mt-3"><span class="tag">Omniverse</span><span class="tag">USD</span><span class="tag">Python</span><span class="tag">3D</span></div>
+  </header>
+
+  <div class="prose">
+<h1>Lesson 02 — USD Python API 深入</h1>
+<blockquote>
+<p>涵蓋官方 Tutorials：Hello World, Referencing Layers, Traversing a Stage, Authoring Variants</p>
+<p>來源：openusd.org/release 官方文檔 v26.05</p>
+</blockquote>
+<hr>
+<h2>環境設定</h2>
+<pre><code class="language-bash"># USD Python 需要這兩個環境變數
+export PYTHONPATH=/path/to/usd/lib/python:$PYTHONPATH
+export PATH=/path/to/usd/bin:$PATH
+
+# 測試
+python -c "from pxr import Usd; print('OK')"</code></pre>
+<p>核心 import：</p>
+<pre><code class="language-python">from pxr import Usd, UsdGeom, Sdf, Gf, Kind, Vt</code></pre>
+<hr>
+<h2>一、建立與開啟 Stage</h2>
+<h3>建立新場景</h3>
+<pre><code class="language-python">from pxr import Usd, UsdGeom
+
+# 建立空白 Stage
+stage = Usd.Stage.CreateNew("myscene.usda")
+
+# 定義 Prim
+xform = UsdGeom.Xform.Define(stage, "/World")        # 容器節點
+sphere = UsdGeom.Sphere.Define(stage, "/World/Ball")  # 球體
+sphere.GetRadiusAttr().Set(50.0)
+
+# 儲存
+stage.GetRootLayer().Save()</code></pre>
+<h3>開啟現有場景</h3>
+<pre><code class="language-python">stage = Usd.Stage.Open("myscene.usda")
+
+# 讀取 Prim
+prim = stage.GetPrimAtPath("/World/Ball")
+radius = prim.GetAttribute("radius").Get()
+print(radius)  # 50.0</code></pre>
+<h3>產生的 .usda 檔案</h3>
+<pre><code class="language-usda">#usda 1.0
+
+def Xform "World" {
+    def Sphere "Ball" {
+        double radius = 50
+    }
+}</code></pre>
+<hr>
+<h2>二、Geom Schemas（幾何體型別）</h2>
+<table>
+<thead><tr><th>Schema Class</th><th>說明</th><th>關鍵屬性</th></tr></thead>
+<tbody>
+<tr><td><code>UsdGeom.Xform</code></td><td>變換容器（群組）</td><td>xformOp:translate/rotate/scale</td></tr>
+<tr><td><code>UsdGeom.Sphere</code></td><td>球體</td><td>radius, extent</td></tr>
+<tr><td><code>UsdGeom.Cube</code></td><td>立方體</td><td>size, extent</td></tr>
+<tr><td><code>UsdGeom.Cylinder</code></td><td>圓柱</td><td>radius, height, axis</td></tr>
+<tr><td><code>UsdGeom.Cone</code></td><td>圓錐</td><td>radius, height, axis</td></tr>
+<tr><td><code>UsdGeom.Mesh</code></td><td>自訂網格</td><td>points, faceVertexCounts, faceVertexIndices</td></tr>
+<tr><td><code>UsdGeom.Camera</code></td><td>攝影機</td><td>focalLength, fStop</td></tr>
+</tbody></table>
+<h3>Mesh 建立範例</h3>
+<pre><code class="language-python">mesh = UsdGeom.Mesh.Define(stage, "/World/MyMesh")
+mesh.CreatePointsAttr([
+    (-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)
+])
+mesh.CreateFaceVertexCountsAttr([4])           # 一個四邊形
+mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3]) # 頂點順序（逆時針）
+mesh.CreateExtentAttr([(-1, -1, 0), (1, 1, 0)])</code></pre>
+<h3>Xform 操作</h3>
+<pre><code class="language-python">from pxr import UsdGeom
+
+xform = UsdGeom.Xformable(stage.GetPrimAtPath("/World"))
+# 方法 A：CommonAPI（簡潔）
+UsdGeom.XformCommonAPI(xform).SetTranslate((10, 0, 0))
+UsdGeom.XformCommonAPI(xform).SetRotate((0, 45, 0))
+UsdGeom.XformCommonAPI(xform).SetScale((2, 2, 2))
+
+# 方法 B：Op API（精細控制，支援多個 op 順序）
+xform.AddTranslateOp().Set(Gf.Vec3d(10, 0, 0))
+xform.AddRotateYOp().Set(45)</code></pre>
+<hr>
+<h2>三、屬性讀寫</h2>
+<h3>基本讀寫</h3>
+<pre><code class="language-python"># 讀取
+radius = sphere.GetAttribute("radius").Get()
+color = sphere.GetAttribute("primvars:displayColor").Get()  # [(r,g,b)]
+
+# 寫入
+sphere.GetRadiusAttr().Set(100.0)
+
+# Display Color
+gprim = UsdGeom.Gprim.Get(stage, "/World/Ball")
+gprim.GetDisplayColorAttr().Set([(1, 0, 0)])  # 紅色
+
+# 清除屬性（還原為未設定）
+colorAttr.Clear()</code></pre>
+<h3>DefaultPrim（設定場景根節點）</h3>
+<pre><code class="language-python">stage.SetDefaultPrim(stage.GetPrimAtPath("/World"))
+# → .usda 中出現：defaultPrim = "World"</code></pre>
+<hr>
+<h2>四、References（引用外部資產）</h2>
+<p>核心概念：<strong>不複製、只引用</strong>，保持資料單一來源。</p>
+<pre><code class="language-python"># 建立一個引用層
+refStage = Usd.Stage.CreateNew("MyAssembly.usda")
+
+# 用 Override 建立參考點
+chair1 = refStage.OverridePrim("/Chair1")
+chair1.GetReferences().AddReference("./chair_model.usda")
+
+chair2 = refStage.OverridePrim("/Chair2")
+chair2.GetReferences().AddReference("./chair_model.usda")
+
+# Override 子屬性（不修改原始資產）
+overColor = UsdGeom.Sphere.Get(refStage, "/Chair2/cushion")
+overColor.GetDisplayColorAttr().Set([(1, 0, 0)])  # Chair2 墊子改紅色</code></pre>
+<p>產生的檔案：</p>
+<pre><code class="language-usda">over "Chair1" (
+    prepend references = @./chair_model.usda@
+) {}
+
+over "Chair2" (
+    prepend references = @./chair_model.usda@
+) {
+    over "cushion" {
+        color3f[] primvars:displayColor = [(1, 0, 0)]
+    }
+}</code></pre>
+<h3>Composed Stage（合成後的完整場景）</h3>
+<pre><code class="language-python"># 看合成後的結果（所有引用展開）
+print(refStage.ExportToString())</code></pre>
+<hr>
+<h2>五、Stage 遍歷</h2>
+<h3>簡單遍歷：Traverse()</h3>
+<pre><code class="language-python"># 遍歷所有 active prim
+for prim in stage.Traverse():
+    print(prim.GetPath())  # /World, /World/Ball
+
+# 過濾：只遍歷球體
+spheres = [p for p in stage.Traverse() if UsdGeom.Sphere(p)]
+
+# 只遍歷 specific type
+spheres = [p for p in stage.Traverse() if p.IsA(UsdGeom.Sphere)]</code></pre>
+<h3>包含非 active：TraverseAll()</h3>
+<pre><code class="language-python"># Traverse() 跳過 active=false 的 prim
+# TraverseAll() 包含所有 prim
+for prim in stage.TraverseAll():
+    print(prim.GetPath())</code></pre>
+<h3>PreAndPostVisit（前序/後序遍歷）</h3>
+<pre><code class="language-python">primIter = iter(Usd.PrimRange.PreAndPostVisit(stage.GetPseudoRoot()))
+for prim in primIter:
+    if primIter.IsPostVisit():
+        print(f"← 離開 {prim.GetPath()}")
+    else:
+        print(f"→ 進入 {prim.GetPath()}")</code></pre>
+<p>輸出範例：</p>
+<pre><code>→ 進入 /             # 前序：先父
+→ 進入 /World
+→ 進入 /World/Ball
+← 離開 /World/Ball   # 後序：後子
+← 離開 /World
+← 離開 /</code></pre>
+<p>這在建立 transform hierarchy 時很重要（先處理父節點變換，再處理子節點）。</p>
+<hr>
+<h2>六、VariantSets（變體切換）</h2>
+<p>用於 LOD、材質切換、零件替換等場景。</p>
+<h3>建立 VariantSet</h3>
+<pre><code class="language-python">rootPrim = stage.GetPrimAtPath("/World")
+vset = rootPrim.GetVariantSets().AddVariantSet("shadingVariant")
+
+# 加入三個變體
+vset.AddVariant("red")
+vset.AddVariant("green")
+vset.AddVariant("blue")
+
+# 在每個變體中編輯
+vset.SetVariantSelection("red")
+with vset.GetVariantEditContext():
+    colorAttr.Set([(1, 0, 0)])
+
+vset.SetVariantSelection("green")
+with vset.GetVariantEditContext():
+    colorAttr.Set([(0, 1, 0)])
+
+vset.SetVariantSelection("blue")
+with vset.GetVariantEditContext():
+    colorAttr.Set([(0, 0, 1)])</code></pre>
+<p>產生的 .usda：</p>
+<pre><code class="language-usda">def Xform "World" (
+    variants = {
+        string shadingVariant = "green"
+    }
+    prepend variantSets = "shadingVariant"
+) {
+    def Sphere "Ball" { ... }
+
+    variantSet "shadingVariant" = {
+        "red" {
+            over "Ball" {
+                color3f[] primvars:displayColor = [(1, 0, 0)]
+            }
+        }
+        "green" {
+            over "Ball" {
+                color3f[] primvars:displayColor = [(0, 1, 0)]
+            }
+        }
+        "blue" {
+            over "Ball" {
+                color3f[] primvars:displayColor = [(0, 0, 1)]
+            }
+        }
+    }
+}</code></pre>
+<h3>執行階段切換變體</h3>
+<pre><code class="language-python">sessionLayer = stage.GetSessionLayer()
+# 用 usdview 或在 session layer 中設定
+# 或在 Python 中：
+rootPrim.GetVariantSets()["shadingVariant"].SetVariantSelection("red")</code></pre>
+<hr>
+<h2>七、動畫（Time Samples）</h2>
+<pre><code class="language-python">from pxr import Usd, UsdGeom
+
+stage = Usd.Stage.CreateNew("animated.usda")
+sphere = UsdGeom.Sphere.Define(stage, "/Ball")
+
+# 設定 time-sampled 動畫
+radiusAttr = sphere.GetRadiusAttr()
+radiusAttr.Set(1.0, Usd.TimeCode.Default())  # default value
+radiusAttr.Set(10.0, Usd.TimeCode(1))        # frame 1
+radiusAttr.Set(100.0, Usd.TimeCode(24))      # frame 24
+radiusAttr.Set(10.0, Usd.TimeCode(48))       # frame 48
+
+# 讀取特定 frame
+print(radiusAttr.Get(Usd.TimeCode(12)))  # 內插值 ≈ 55
+
+# 讀取所有 time samples
+for t in radiusAttr.GetTimeSamples():
+    val = radiusAttr.Get(t)
+    print(f"frame {t}: {val}")</code></pre>
+<hr>
+<h2>八、完整範例：建立一個組裝場景</h2>
+<pre><code class="language-python">from pxr import Usd, UsdGeom, Sdf, Gf, Kind
+
+# 1. 建立資產層（椅子模型）
+assetStage = Usd.Stage.CreateNew("chair.usda")
+UsdGeom.SetStageUpAxis(assetStage, UsdGeom.Tokens.y)  # Y-up
+
+chair = UsdGeom.Xform.Define(assetStage, "/Chair")
+Usd.ModelAPI(chair).SetKind(Kind.Tokens.component)
+
+# 椅面
+seat = UsdGeom.Cube.Define(assetStage, "/Chair/Seat")
+seat.GetSizeAttr().Set(2.0)
+UsdGeom.XformCommonAPI(seat).SetTranslate((0, 1, 0))
+UsdGeom.XformCommonAPI(seat).SetScale((2, 0.2, 2))
+
+# 椅背
+back = UsdGeom.Cube.Define(assetStage, "/Chair/Back")
+back.GetSizeAttr().Set(2.0)
+UsdGeom.XformCommonAPI(back).SetTranslate((0, 3, -1))
+UsdGeom.XformCommonAPI(back).SetScale((2, 2, 0.2))
+
+assetStage.GetRootLayer().Save()
+
+# 2. 建立組裝層
+assemblyStage = Usd.Stage.CreateNew("room.usda")
+assemblyStage.SetDefaultPrim(assemblyStage.DefinePrim("/Room"))
+
+# 放置多把椅子
+for i, pos in enumerate([(0, 0, 0), (5, 0, 0), (-5, 0, 0)]):
+    primPath = f"/Room/Chair{i+1}"
+    chair = assemblyStage.OverridePrim(primPath)
+    chair.GetReferences().AddReference("./chair.usda", "/Chair")
+    UsdGeom.XformCommonAPI(UsdGeom.Xformable(
+        assemblyStage.GetPrimAtPath(primPath)
+    )).SetTranslate(pos)
+
+assemblyStage.GetRootLayer().Save()
+print(assemblyStage.ExportToString())</code></pre>
+<hr>
+<h2>核心 API 速查</h2>
+<table>
+<thead><tr><th>操作</th><th>API</th></tr></thead>
+<tbody>
+<tr><td>建立 Stage</td><td><code>Usd.Stage.CreateNew("file.usda")</code></td></tr>
+<tr><td>開啟 Stage</td><td><code>Usd.Stage.Open("file.usda")</code></td></tr>
+<tr><td>定義 Prim</td><td><code>UsdGeom.Sphere.Define(stage, "/path")</code></td></tr>
+<tr><td>讀取 Prim</td><td><code>stage.GetPrimAtPath("/path")</code></td></tr>
+<tr><td>遍歷 Prim</td><td><code>stage.Traverse()</code> / <code>TraverseAll()</code></td></tr>
+<tr><td>前後序遍歷</td><td><code>Usd.PrimRange.PreAndPostVisit(root)</code></td></tr>
+<tr><td>Get 屬性</td><td><code>prim.GetAttribute("name").Get()</code></td></tr>
+<tr><td>Set 屬性</td><td><code>attr.Set(value)</code></td></tr>
+<tr><td>動畫值</td><td><code>attr.Set(value, Usd.TimeCode(frame))</code></td></tr>
+<tr><td>引用資產</td><td><code>prim.GetReferences().AddReference("file")</code></td></tr>
+<tr><td>變體集</td><td><code>prim.GetVariantSets().AddVariantSet("name")</code></td></tr>
+<tr><td>變體編輯</td><td><code>vset.GetVariantEditContext()</code></td></tr>
+<tr><td>儲存</td><td><code>stage.GetRootLayer().Save()</code></td></tr>
+<tr><td>匯出字串</td><td><code>stage.ExportToString()</code></td></tr>
+</tbody></table>
+<hr>
+<h2>學習檢查</h2>
+<ul>
+<li>[ ] 用 Python 建立一個場景，包含 Xform → Cube + Sphere</li>
+<li>[ ] 用 References 組合兩個獨立資產到同一場景</li>
+<li>[ ] 用 Traverse() 遍歷所有 Prim 並印出 typeName</li>
+<li>[ ] 建立一個 VariantSet 切換物體顏色</li>
+<li>[ ] 為 Sphere 設定 keyframe 動畫（radius 變化）</li>
+</ul>
+<hr>
+<p>下一課：<a href="../nvidia-omniverse/03-omniverse-kit-sdk.md" target="_blank" rel="noopener">Lesson 03 — Omniverse 入門：Kit SDK 與 Extension 架構</a></p>
+  </div>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-sm text-slate-600 space-y-2">
+    <p>© 2026 Kirk — 全端開發 × AI 自動化</p>
+    <p>有專案想法？<a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="text-brand-400">聯絡我</a></p>
+  </footer>
+</article>
+
+</body>
+</html>

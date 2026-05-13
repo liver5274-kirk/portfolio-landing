@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Isaac Sim + ROS 機器人模擬入門 — Kirk.dev 技術部落格</title>
+  <meta name="description" content="Isaac Sim + ROS 機器人模擬入門 — Kirk 的技術筆記與開發心得。全端開發、AI 自動化、量化交易、3D 圖學。">
+  <meta property="og:title" content="Isaac Sim + ROS 機器人模擬入門">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-isaac-sim-ros.html">
+  <link rel="canonical" href="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-isaac-sim-ros.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── 文章內容排版 ── */
+    .prose { max-width: 65ch; }
+    .prose h1 { font-size: 2rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; color: #e2e8f0; }
+    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; color: #e2e8f0; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; }
+    .prose h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+    .prose a { color: #47c07b; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #7cd9a2; }
+    .prose strong { color: #e2e8f0; font-weight: 600; }
+    .prose code { background: #1e293b; color: #7cd9a2; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .prose pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+    .prose pre code { background: none; color: #cbd5e1; padding: 0; font-size: 0.85rem; line-height: 1.6; }
+    .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; color: #94a3b8; }
+    .prose li { margin-bottom: 0.35rem; line-height: 1.65; }
+    .prose blockquote { border-left: 3px solid #22a55e; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(34,165,94,0.05); border-radius: 0 6px 6px 0; }
+    .prose blockquote p { color: #94a3b8; margin: 0; }
+    .prose hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .prose th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #1e293b; color: #94a3b8; }
+    .prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    /* ── Callout ── */
+    .callout { border-left-width: 3px; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .callout-note { background: rgba(59,130,246,0.08); border-color: #3b82f6; }
+    .callout-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+    .callout-tip { background: rgba(34,197,94,0.08); border-color: #22c55e; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: #06b6d4; }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+    .callout-example { background: rgba(139,92,246,0.08); border-color: #8b5cf6; }
+    .callout-header { font-weight: 600; margin-bottom: 0.35rem; color: #cbd5e1; }
+    .callout-body p { margin: 0; }
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 0.15em 0.6em; font-size: 0.75rem; background: #0f172a; color: #47c07b; border: 1px solid #1e293b; border-radius: 999px; margin-right: 0.35rem; }
+    /* ── Back link ── */
+    .back-link { color: #64748b; font-size: 0.85rem; }
+    .back-link:hover { color: #47c07b; }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/" class="text-brand-400 font-bold text-lg tracking-tight no-underline">Kirk<span class="text-slate-400 font-normal">.dev</span></a>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#works" class="hover:text-brand-400 transition no-underline">作品</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#skills" class="hover:text-brand-400 transition no-underline">技能</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="text-brand-400 transition no-underline">部落格</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="hover:text-brand-400 transition no-underline">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="pt-28 pb-20 px-6 max-w-3xl mx-auto">
+  <header class="mb-10">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="back-link mb-4 inline-block">← 所有文章</a>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100 mb-3">Isaac Sim + ROS 機器人模擬入門</h1>
+    <div class="flex items-center gap-4 text-sm text-slate-500">
+      <span>2026-05-13</span>
+      <span>·</span>
+      <span>Kirk</span>
+    </div>
+    <div class="mt-3"><span class="tag">Omniverse</span><span class="tag">Isaac Sim</span><span class="tag">ROS</span><span class="tag">Robotics</span></div>
+  </header>
+
+  <div class="prose">
+<h1>Lesson 06 — Isaac Sim + ROS 機器人模擬</h1>
+<blockquote>
+<p>- Software-in-the-Loop Testing for Robots With OpenUSD, Isaac Sim, and ROS (2h, Free)</p>
+<p>- A Beginner's Guide to Autonomous Robots (1h, Free)</p>
+<p>- Generating High-Quality Motion Data for Robotics With MobilityGen (1.5h, Free)</p>
+<p>來源：docs.omniverse.nvidia.com/isaacsim</p>
+</blockquote>
+<hr>
+<h2>什麼是 Isaac Sim？</h2>
+<blockquote>
+</blockquote>
+<p>基於 Omniverse Kit 建立，專門用於：</p>
+<ul>
+<li>機器人運動學/動力學模擬</li>
+<li>感測器模擬（相機、LiDAR、IMU）</li>
+<li>ROS/ROS2 整合</li>
+<li>Synthetic Data Generation（合成資料）</li>
+<li>Reinforcement Learning 訓練環境</li>
+</ul>
+<pre><code>Isaac Sim
+├── Omniverse Kit (USD + RTX + UI)
+├── PhysX 5 (物理引擎)
+├── ROS/ROS2 Bridge
+├── Sensor Simulation (RTX-based)
+├── Cortex (高階機器人控制)
+└── Python API (omni.isaac.*)</code></pre>
+<hr>
+<h2>核心架構</h2>
+<h3>USD 在 Isaac Sim 中的角色</h3>
+<pre><code class="language-python"># Isaac Sim 用 USD Schema 定義機器人
+from pxr import Usd, UsdPhysics, UsdLux
+
+# 物理屬性
+UsdPhysics.RigidBodyAPI.Apply(prim)     # 剛體
+UsdPhysics.CollisionAPI.Apply(prim)     # 碰撞
+UsdPhysics.MassAPI.Apply(prim)          # 質量
+
+# 關節
+UsdPhysics.RevoluteJoint.Define(stage, "/Robot/Joint1")
+UsdPhysics.PrismaticJoint.Define(stage, "/Robot/Slider1")</code></pre>
+<hr>
+<h2>ROS/ROS2 Bridge</h2>
+<p>Isaac Sim 內建 ROS2 Bridge，可與真實 ROS 系統雙向通訊：</p>
+<pre><code>┌──────────────┐           ┌──────────────┐
+│  Isaac Sim   │ ←─ROS2──→ │  ROS2 Node   │
+│  (模擬環境)   │   topics  │  (控制演算法) │
+└──────────────┘           └──────────────┘</code></pre>
+<h3>啟動 ROS2 Bridge</h3>
+<pre><code class="language-python">from omni.isaac.ros2_bridge import Ros2Bridge
+
+# 建立 Bridge
+bridge = Ros2Bridge()
+
+# 發布 joint state
+bridge.publish_joint_state("/robot/joint_states")
+
+# 訂閱 cmd_vel (速度指令)
+bridge.subscribe_cmd_vel("/robot/cmd_vel", callback)
+
+# 發布相機影像
+bridge.publish_camera_image("/camera/rgb", camera_prim)</code></pre>
+<h3>ROS2 Action 整合</h3>
+<pre><code class="language-python"># Isaac Sim 可以作為 ROS2 Action Server
+from omni.isaac.ros2_bridge import Ros2ActionServer
+
+pick_server = Ros2ActionServer(
+    "/robot/pick_object",
+    PickAction,
+    execute_callback=my_pick_callback
+)</code></pre>
+<hr>
+<h2>感測器模擬</h2>
+<h3>相機 (RTX-based)</h3>
+<pre><code class="language-python">from omni.isaac.sensor import Camera
+
+# 建立相機
+camera = Camera(
+    prim_path="/Robot/Camera",
+    resolution=(1280, 720),
+    frequency=30,  # Hz
+    fov=90
+)
+
+# 讀取影像
+rgb = camera.get_rgb()        # numpy array (720, 1280, 3)
+depth = camera.get_depth()    # 深度圖
+seg = camera.get_instance_segmentation()  # 語義分割
+bboxes = camera.get_bounding_box_2d_tight()  # 2D bounding boxes
+
+# 發布到 ROS
+camera.publish_to_ros("/camera/rgb", "/camera/depth")</code></pre>
+<h3>LiDAR</h3>
+<pre><code class="language-python">from omni.isaac.sensor import Lidar
+
+lidar = Lidar(
+    prim_path="/Robot/Lidar",
+    num_channels=64,
+    range=100.0,  # 米
+    frequency=10   # Hz
+)
+
+# 讀取點雲
+points = lidar.get_point_cloud()  # numpy (N, 3)
+intensities = lidar.get_intensities()</code></pre>
+<h3>IMU</h3>
+<pre><code class="language-python">from omni.isaac.sensor import IMU
+
+imu = IMU(prim_path="/Robot/IMU", frequency=100)
+
+accel = imu.get_linear_acceleration()
+gyro = imu.get_angular_velocity()
+orient = imu.get_orientation()</code></pre>
+<hr>
+<h2>Software-in-the-Loop (SIL) 測試</h2>
+<h3>什麼是 SIL？</h3>
+<pre><code>傳統開發:  實體機器人 → 測試 → 失敗 → 硬體損壞
+SIL開發:   虛擬機器人 → 測試 → 失敗 → 重來 (零成本)
+            │
+            通過測試後→ 部署到實體機器人</code></pre>
+<h3>SIL 測試流程</h3>
+<pre><code class="language-python">from omni.isaac.core import World
+from omni.isaac.core.robots import Robot
+
+# 1. 建立模擬世界
+world = World(stage_units_in_meters=1.0)
+
+# 2. 載入機器人
+robot = Robot(
+    prim_path="/World/Robot",
+    usd_path="omniverse://localhost/Robots/my_robot.usd"
+)
+
+# 3. 設定 ROS2 Bridge
+bridge = Ros2Bridge()
+bridge.enable()
+
+# 4. 執行 SIL 測試
+for step in range(1000):
+    # 感測器讀取
+    rgb = camera.get_rgb()
+    lidar_pts = lidar.get_point_cloud()
+
+    # 你的控制演算法（透過 ROS2）
+    # algorithm_node 訂閱感測器，發布 cmd_vel
+
+    # 步進模擬
+    world.step(render=True)</code></pre>
+<hr>
+<h2>Synthetic Data Generation</h2>
+<p>用模擬環境產生標註好的訓練資料：</p>
+<pre><code class="language-python">from omni.isaac.synthetic import SyntheticData
+
+sdg = SyntheticData()
+
+# 設定輸出
+sdg.set_output_path("/data/synthetic/")
+
+# 隨機化物體位置、材質、燈光
+sdg.randomize_objects()
+sdg.randomize_materials()
+sdg.randomize_lighting()
+
+# 擷取標註資料
+for i in range(1000):  # 產生 1000 張
+    sdg.randomize_scene()
+    rgb = camera.get_rgb()
+    seg = camera.get_instance_segmentation()
+    bboxes = camera.get_bounding_box_2d_tight()
+
+    # 儲存 (image, segmentation mask, bounding boxes)
+    sdg.save_frame(i, rgb, seg, bboxes)</code></pre>
+<hr>
+<h2>完整範例：Pick-and-Place</h2>
+<pre><code class="language-python">from omni.isaac.core import World
+from omni.isaac.core.robots import Robot
+from omni.isaac.manipulators import PickPlaceController
+from omni.isaac.core.objects import DynamicCuboid
+
+# 初始化
+world = World()
+robot = world.scene.add(
+    Robot(prim_path="/World/Franka", usd_path="Franka.usd")
+)
+cube = world.scene.add(
+    DynamicCuboid(
+        prim_path="/World/Cube",
+        position=(0.5, 0, 0.05),
+        size=0.05,
+        color=(1, 0, 0)
+    )
+)
+
+# Pick-and-Place 控制器
+controller = PickPlaceController(
+    name="pick_place",
+    gripper=robot.gripper,
+    robot_articulation=robot,
+)
+
+# 目標位置
+controller.pick("/World/Cube")
+controller.place(position=(0.3, 0.3, 0.05))
+
+# 執行
+while not controller.is_done():
+    world.step(render=True)</code></pre>
+<hr>
+<h2>Isaac Sim Python API 速查</h2>
+<table>
+<thead><tr><th>模組</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>omni.isaac.core</code></td><td>核心世界/機器人/Robot API</td></tr>
+<tr><td><code>omni.isaac.sensor</code></td><td>相機/LiDAR/IMU 模擬</td></tr>
+<tr><td><code>omni.isaac.ros2_bridge</code></td><td>ROS2 橋接</td></tr>
+<tr><td><code>omni.isaac.manipulators</code></td><td>Pick-and-Place 等操作</td></tr>
+<tr><td><code>omni.isaac.navigation</code></td><td>路徑規劃</td></tr>
+<tr><td><code>omni.isaac.synthetic</code></td><td>合成資料產生</td></tr>
+<tr><td><code>omni.isaac.cortex</code></td><td>高階機器人行為</td></tr>
+<tr><td><code>omni.isaac.gym</code></td><td>RL 訓練環境</td></tr>
+</tbody></table>
+<hr>
+<h2>學習檢查</h2>
+<ul>
+<li>[ ] Isaac Sim 和 Omniverse Kit 的關係？</li>
+<li>[ ] ROS2 Bridge 如何雙向通訊？</li>
+<li>[ ] SIL 測試的核心優勢？</li>
+<li>[ ] 如何在 Isaac Sim 中模擬相機/LiDAR？</li>
+<li>[ ] 用什麼 API 產生合成訓練資料？</li>
+</ul>
+<hr>
+<h2>學習路徑完成！</h2>
+<pre><code>✓ Lesson 01 — OpenUSD 基礎概念
+✓ Lesson 02 — USD Python API 深入
+✓ Lesson 03 — Omniverse Kit SDK + Extension 架構
+✓ Lesson 04 — Extension 實戰開發
+✓ Lesson 05 — Digital Twin + App Streaming
+✓ Lesson 06 — Isaac Sim + ROS 機器人模擬</code></pre>
+<p><strong>對應完成 6/7 門免費 NVIDIA DLI 課程的內容。</strong></p>
+<hr>
+<p>下一步建議：</p>
+<ol>
+<li>本機安裝 Omniverse Launcher → https://www.nvidia.com/omniverse/</li>
+<li>下載 USD Composer / USD Explorer 實作</li>
+<li>在 NVIDIA DLI 註冊拿結業證書：https://learn.nvidia.com/</li>
+</ol>
+  </div>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-sm text-slate-600 space-y-2">
+    <p>© 2026 Kirk — 全端開發 × AI 自動化</p>
+    <p>有專案想法？<a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="text-brand-400">聯絡我</a></p>
+  </footer>
+</article>
+
+</body>
+</html>

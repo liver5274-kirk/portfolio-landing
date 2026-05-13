@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omniverse Kit SDK 與 Extension 架構入門 — Kirk.dev 技術部落格</title>
+  <meta name="description" content="Omniverse Kit SDK 與 Extension 架構入門 — Kirk 的技術筆記與開發心得。全端開發、AI 自動化、量化交易、3D 圖學。">
+  <meta property="og:title" content="Omniverse Kit SDK 與 Extension 架構入門">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-omniverse-kit-sdk.html">
+  <link rel="canonical" href="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-omniverse-kit-sdk.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── 文章內容排版 ── */
+    .prose { max-width: 65ch; }
+    .prose h1 { font-size: 2rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; color: #e2e8f0; }
+    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; color: #e2e8f0; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; }
+    .prose h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+    .prose a { color: #47c07b; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #7cd9a2; }
+    .prose strong { color: #e2e8f0; font-weight: 600; }
+    .prose code { background: #1e293b; color: #7cd9a2; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .prose pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+    .prose pre code { background: none; color: #cbd5e1; padding: 0; font-size: 0.85rem; line-height: 1.6; }
+    .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; color: #94a3b8; }
+    .prose li { margin-bottom: 0.35rem; line-height: 1.65; }
+    .prose blockquote { border-left: 3px solid #22a55e; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(34,165,94,0.05); border-radius: 0 6px 6px 0; }
+    .prose blockquote p { color: #94a3b8; margin: 0; }
+    .prose hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .prose th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #1e293b; color: #94a3b8; }
+    .prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    /* ── Callout ── */
+    .callout { border-left-width: 3px; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .callout-note { background: rgba(59,130,246,0.08); border-color: #3b82f6; }
+    .callout-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+    .callout-tip { background: rgba(34,197,94,0.08); border-color: #22c55e; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: #06b6d4; }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+    .callout-example { background: rgba(139,92,246,0.08); border-color: #8b5cf6; }
+    .callout-header { font-weight: 600; margin-bottom: 0.35rem; color: #cbd5e1; }
+    .callout-body p { margin: 0; }
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 0.15em 0.6em; font-size: 0.75rem; background: #0f172a; color: #47c07b; border: 1px solid #1e293b; border-radius: 999px; margin-right: 0.35rem; }
+    /* ── Back link ── */
+    .back-link { color: #64748b; font-size: 0.85rem; }
+    .back-link:hover { color: #47c07b; }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/" class="text-brand-400 font-bold text-lg tracking-tight no-underline">Kirk<span class="text-slate-400 font-normal">.dev</span></a>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#works" class="hover:text-brand-400 transition no-underline">作品</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#skills" class="hover:text-brand-400 transition no-underline">技能</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="text-brand-400 transition no-underline">部落格</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="hover:text-brand-400 transition no-underline">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="pt-28 pb-20 px-6 max-w-3xl mx-auto">
+  <header class="mb-10">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="back-link mb-4 inline-block">← 所有文章</a>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100 mb-3">Omniverse Kit SDK 與 Extension 架構入門</h1>
+    <div class="flex items-center gap-4 text-sm text-slate-500">
+      <span>2026-05-13</span>
+      <span>·</span>
+      <span>Kirk</span>
+    </div>
+    <div class="mt-3"><span class="tag">Omniverse</span><span class="tag">NVIDIA</span><span class="tag">3D</span><span class="tag">Python</span></div>
+  </header>
+
+  <div class="prose">
+<h1>Lesson 03 — Omniverse 入門：Kit SDK 與 Extension 架構</h1>
+<blockquote>
+<p>涵蓋 Kit SDK 核心概念 + Extension 開發基礎</p>
+<p>來源：docs.omniverse.nvidia.com/kit/docs/kit-manual v110.1.0</p>
+</blockquote>
+<hr>
+<h2>什麼是 Omniverse Kit？</h2>
+<p>Omniverse Kit 是 NVIDIA 提供的 <strong>SDK</strong>，用來建立 Omniverse 應用程式（如 USD Composer、USD Explorer）。核心元件：</p>
+<pre><code>Omniverse Kit
+├── USD / Hydra       ← 場景描述 + 渲染管線
+├── Omni.USD          ← C++ 層，橋接 USD + Kit Core + OmniClient
+├── Carbonite          ← 外掛框架（plugin system）
+├── RTX Renderer       ← 即時光線追蹤渲染
+├── omni.ui            ← UI 工具包（類似 Qt/PySide）
+├── omni.client        ← 連線 Omniverse Nucleus 伺服器
+└── Python Scripting   ← 所有功能都有 Python binding</code></pre>
+<hr>
+<h2>核心概念：Extension（擴展）</h2>
+<h3>Extension 是什麼？</h3>
+<blockquote>
+</blockquote>
+<p>Kit 的所有功能都以 Extension 形式存在。一個 Extension 可以：</p>
+<ul>
+<li>載入 Python 模組</li>
+<li>載入 C++ / Carbonite 外掛</li>
+<li>啟用其他 Extension（依賴）</li>
+<li>套用設定（settings）</li>
+<li>註冊 UI、命令、事件</li>
+</ul>
+<h3>目錄結構</h3>
+<pre><code>extensions/
+└── omni.example.hello/          ← Extension 根目錄
+    ├── config/
+    │   └── extension.toml        ← Extension 定義檔（必需）
+    ├── omni/
+    │   └── example/
+    │       └── hello/
+    │           ├── __init__.py   ← Python 入口
+    │           └── window.py     ← 視窗邏輯
+    ├── data/                     ← 靜態資源
+    ├── docs/                     ← 文件
+    └── bin/                      ← 二進位檔案（如有 C++）</code></pre>
+<h3>Extension ID</h3>
+<pre><code>omni.example.hello-1.0.0
+│                 │
+└── ext_name      └── version (semver)</code></pre>
+<ul>
+<li><code>ext_name</code>：命名空間.類別.名稱（如 <code>omni.kit.commands</code>）</li>
+<li><code>version</code>：semver（<code>major.minor.patch-prerelease</code>）</li>
+</ul>
+<hr>
+<h2>extension.toml 完整範例</h2>
+<pre><code class="language-toml"># ── 基本資訊 ────────────────────────────
+[package]
+version = "1.0.0"
+title = "Hello World Extension"
+description = "My first Omniverse extension"
+category = "example"
+authors = ["Your Name &lt;email@example.com&gt;"]
+
+# ── 依賴 ────────────────────────────────
+[dependencies]
+"omni.kit.commands" = {}        # 無版本限制
+"omni.usd" = "1.0.0"            # 最低版本
+"omni.ui" = "2.0"
+
+# 可選依賴
+[optional_dependencies]
+"omni.kit.window.filepicker" = {}
+
+# ── Python 模組 ──────────────────────────
+[python]
+# 載入的 Python 模組（對應 omni/example/hello/__init__.py）
+modules = [
+    "omni.example.hello"
+]
+
+# ── Carbonite 外掛（如有 C++）────────────
+[[plugin]]
+path = "bin/windows-x86_64/release/omni.example.hello.plugin.dll"
+
+# ── 設定 ────────────────────────────────
+[settings]
+app/exts/omni.example.hello/enabled = true
+app/exts/omni.example.hello/windowTitle = "Hello World"
+
+# ── Extension 可能觸發的事件 ─────────────
+[events]
+"omni.kit.commands.execute" = "on_command_executed"</code></pre>
+<hr>
+<h2>Python Extension 最小範例</h2>
+<h3><code>omni/example/hello/__init__.py</code></h3>
+<pre><code class="language-python">import omni.ext
+import omni.ui as ui
+
+class HelloExtension(omni.ext.IExt):
+    """Extension 生命週期管理"""
+
+    def on_startup(self, ext_id):
+        """Extension 被啟用時呼叫"""
+        print(f"[{ext_id}] Hello Extension starting up")
+        self._window = ui.Window("Hello World", width=300, height=200)
+        with self._window.frame:
+            with ui.VStack():
+                ui.Label("Welcome to Omniverse Kit!")
+                ui.Button("Click Me", clicked_fn=self._on_click)
+
+    def on_shutdown(self):
+        """Extension 被停用時呼叫"""
+        print("Hello Extension shutting down")
+        if self._window:
+            self._window.destroy()
+            self._window = None
+
+    def _on_click(self):
+        print("Button clicked!")</code></pre>
+<hr>
+<h2>Extension 生命週期</h2>
+<pre><code>載入階段:
+  1. Kit 掃描 extension 搜尋路徑
+  2. 讀取 extension.toml
+  3. 解析依賴（dependencies）
+  4. 依序載入依賴 Extension
+
+啟用階段:
+  5. 載入 [python].modules 指定的 Python 模組
+  6. 呼叫 on_startup(ext_id)
+  
+執行階段:
+  7. Extension 回應事件、建立 UI、操作 USD
+
+停用階段:
+  8. 呼叫 on_shutdown()
+  9. 釋放資源</code></pre>
+<hr>
+<h2>常用 API</h2>
+<h3>omni.usd — USD 操作</h3>
+<pre><code class="language-python">import omni.usd
+
+# 取得目前 Stage
+stage = omni.usd.get_context().get_stage()
+
+# 監聽 Stage 變化
+def on_stage_opened(result, error):
+    if result:
+        print("Stage opened!")
+
+omni.usd.get_context().open_stage_async("path/to/scene.usda", on_stage_opened)</code></pre>
+<h3>omni.kit.commands — 命令系統</h3>
+<pre><code class="language-python">import omni.kit.commands
+
+# 執行內建命令
+omni.kit.commands.execute("CreatePrim", prim_type="Sphere", prim_path="/World/MySphere")
+
+# 註冊自訂命令
+omni.kit.commands.register("MyCustomCommand", my_execute_fn)
+
+# 復原
+omni.kit.undo.begin_group()
+omni.kit.commands.execute("CreatePrim", prim_type="Cube", prim_path="/World/Cube1")
+omni.kit.commands.execute("CreatePrim", prim_type="Cube", prim_path="/World/Cube2")
+omni.kit.undo.end_group()
+omni.kit.undo.undo()  # 復原兩個 Cube</code></pre>
+<h3>omni.ui — UI 工具包</h3>
+<pre><code class="language-python">import omni.ui as ui
+
+# 建立視窗
+window = ui.Window("My Tool", width=400, height=300)
+with window.frame:
+    with ui.VStack(spacing=5):
+        ui.Label("Settings", style={"font_size": 18})
+        with ui.HStack():
+            ui.Label("Radius:")
+            radius_field = ui.FloatField()
+            radius_field.model.set_value(1.0)
+        ui.Button("Apply", clicked_fn=lambda: print("Applied!"))</code></pre>
+<h3>omni.timeline — 時間軸</h3>
+<pre><code class="language-python">import omni.timeline
+
+timeline = omni.timeline.get_timeline_interface()
+timeline.play()
+timeline.pause()
+timeline.set_current_time(100)  # frame 100
+print(timeline.get_current_time())</code></pre>
+<hr>
+<h2>Extension 搜尋路徑</h2>
+<p>Extension 可以放在這些位置：</p>
+<table>
+<thead><tr><th>路徑</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>{app}/exts/</code></td><td>應用內建 Extension</td></tr>
+<tr><td><code>{app}/extsPhysics/</code></td><td>物理 Extension</td></tr>
+<tr><td><code>$HOME/Documents/Kit/extensions/</code></td><td>使用者自訂</td></tr>
+<tr><td>環境變數 <code>OMNI_EXTS_PATHS</code></td><td>額外搜尋路徑</td></tr>
+<tr><td>Registry (Nucleus)</td><td>從 Omniverse 伺服器下載</td></tr>
+</tbody></table>
+<hr>
+<h2>實際開發流程</h2>
+<pre><code class="language-bash"># 1. 建立 Extension 目錄
+mkdir -p ~/Documents/Kit/extensions/omni.example.mytool/config
+mkdir -p ~/Documents/Kit/extensions/omni.example.mytool/omni/example/mytool
+
+# 2. 建立 extension.toml
+cat &gt; ~/Documents/Kit/extensions/omni.example.mytool/config/extension.toml &lt;&lt; 'EOF'
+[package]
+version = "1.0.0"
+title = "My Tool"
+category = "example"
+
+[dependencies]
+"omni.usd" = {}
+"omni.ui" = {}
+
+[python]
+modules = ["omni.example.mytool"]
+EOF
+
+# 3. 建立 __init__.py
+cat &gt; ~/Documents/Kit/extensions/omni.example.mytool/omni/example/mytool/__init__.py &lt;&lt; 'EOF'
+import omni.ext
+import omni.ui as ui
+
+class MyToolExtension(omni.ext.IExt):
+    def on_startup(self, ext_id):
+        self._window = ui.Window("My Tool", width=300, height=200)
+        with self._window.frame:
+            with ui.VStack():
+                ui.Label("Hello from My Tool!")
+
+    def on_shutdown(self):
+        if self._window:
+            self._window.destroy()
+EOF
+
+# 4. 啟動 Kit 應用，Window → Extensions → 搜尋 "My Tool" → 啟用</code></pre>
+<hr>
+<h2>Extension 類型</h2>
+<table>
+<thead><tr><th>類型</th><th>說明</th></tr></thead>
+<tbody>
+<tr><td><strong>Python-only</strong></td><td>只有 Python 程式碼，最常見</td></tr>
+<tr><td><strong>C++ Plugin</strong></td><td>有 <code>bin/</code> 下的 native 外掛</td></tr>
+<tr><td><strong>Single-file</strong></td><td>只有 <code>extension.toml</code>，純設定/依賴</td></tr>
+<tr><td><strong>App Extension</strong></td><td><code>[package.app] = true</code>，可獨立啟動</td></tr>
+<tr><td><strong>Feature Extension</strong></td><td><code>[package.feature] = true</code>，在使用者 UI 中顯示</td></tr>
+<tr><td><strong>USD Schema</strong></td><td>定義自訂 USD Schema（下一課）</td></tr>
+</tbody></table>
+<hr>
+<h2>學習檢查</h2>
+<ul>
+<li>[ ] Extension 的最小必要檔案是什麼？</li>
+<li>[ ] <code>on_startup()</code> 和 <code>on_shutdown()</code> 各做什麼？</li>
+<li>[ ] <code>extension.toml</code> 中 <code>[dependencies]</code> 的作用？</li>
+<li>[ ] 如何用 <code>omni.kit.commands</code> 建立 Prim？</li>
+<li>[ ] 建立一個自己的 Extension 並在 Kit 中載入測試</li>
+</ul>
+<hr>
+<p>下一課：<a href="../nvidia-omniverse/04-omniverse-extension-dev.md" target="_blank" rel="noopener">Lesson 04 — Omniverse Python Extension 實戰開發</a></p>
+  </div>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-sm text-slate-600 space-y-2">
+    <p>© 2026 Kirk — 全端開發 × AI 自動化</p>
+    <p>有專案想法？<a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="text-brand-400">聯絡我</a></p>
+  </footer>
+</article>
+
+</body>
+</html>

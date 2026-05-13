@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omniverse Python Extension 實戰開發 — Kirk.dev 技術部落格</title>
+  <meta name="description" content="Omniverse Python Extension 實戰開發 — Kirk 的技術筆記與開發心得。全端開發、AI 自動化、量化交易、3D 圖學。">
+  <meta property="og:title" content="Omniverse Python Extension 實戰開發">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-omniverse-extension-dev.html">
+  <link rel="canonical" href="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-13-omniverse-extension-dev.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── 文章內容排版 ── */
+    .prose { max-width: 65ch; }
+    .prose h1 { font-size: 2rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; color: #e2e8f0; }
+    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; color: #e2e8f0; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; }
+    .prose h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+    .prose a { color: #47c07b; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #7cd9a2; }
+    .prose strong { color: #e2e8f0; font-weight: 600; }
+    .prose code { background: #1e293b; color: #7cd9a2; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .prose pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+    .prose pre code { background: none; color: #cbd5e1; padding: 0; font-size: 0.85rem; line-height: 1.6; }
+    .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; color: #94a3b8; }
+    .prose li { margin-bottom: 0.35rem; line-height: 1.65; }
+    .prose blockquote { border-left: 3px solid #22a55e; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(34,165,94,0.05); border-radius: 0 6px 6px 0; }
+    .prose blockquote p { color: #94a3b8; margin: 0; }
+    .prose hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .prose th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #1e293b; color: #94a3b8; }
+    .prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    /* ── Callout ── */
+    .callout { border-left-width: 3px; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .callout-note { background: rgba(59,130,246,0.08); border-color: #3b82f6; }
+    .callout-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+    .callout-tip { background: rgba(34,197,94,0.08); border-color: #22c55e; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: #06b6d4; }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+    .callout-example { background: rgba(139,92,246,0.08); border-color: #8b5cf6; }
+    .callout-header { font-weight: 600; margin-bottom: 0.35rem; color: #cbd5e1; }
+    .callout-body p { margin: 0; }
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 0.15em 0.6em; font-size: 0.75rem; background: #0f172a; color: #47c07b; border: 1px solid #1e293b; border-radius: 999px; margin-right: 0.35rem; }
+    /* ── Back link ── */
+    .back-link { color: #64748b; font-size: 0.85rem; }
+    .back-link:hover { color: #47c07b; }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/" class="text-brand-400 font-bold text-lg tracking-tight no-underline">Kirk<span class="text-slate-400 font-normal">.dev</span></a>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#works" class="hover:text-brand-400 transition no-underline">作品</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#skills" class="hover:text-brand-400 transition no-underline">技能</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="text-brand-400 transition no-underline">部落格</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="hover:text-brand-400 transition no-underline">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="pt-28 pb-20 px-6 max-w-3xl mx-auto">
+  <header class="mb-10">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="back-link mb-4 inline-block">← 所有文章</a>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100 mb-3">Omniverse Python Extension 實戰開發</h1>
+    <div class="flex items-center gap-4 text-sm text-slate-500">
+      <span>2026-05-13</span>
+      <span>·</span>
+      <span>Kirk</span>
+    </div>
+    <div class="mt-3"><span class="tag">Omniverse</span><span class="tag">Python</span><span class="tag">USD</span><span class="tag">3D</span></div>
+  </header>
+
+  <div class="prose">
+<h1>Lesson 04 — Omniverse Python Extension 實戰開發</h1>
+<blockquote>
+<p>涵蓋：USD 操作、UI 建立、命令系統、事件、設定</p>
+<p>來源：docs.omniverse.nvidia.com/kit</p>
+</blockquote>
+<hr>
+<h2>實戰一：場景瀏覽器 Extension</h2>
+<p>在 Extension 中操作 USD 場景並建立自訂 UI。</p>
+<h3>extension.toml</h3>
+<pre><code class="language-toml">[package]
+version = "1.0.0"
+title = "Scene Browser"
+category = "example"
+
+[dependencies]
+"omni.usd" = {}
+"omni.ui" = {}
+"omni.kit.commands" = {}
+
+[python]
+modules = ["omni.example.scene_browser"]</code></pre>
+<h3><code>omni/example/scene_browser/__init__.py</code></h3>
+<pre><code class="language-python">import omni.ext
+import omni.ui as ui
+import omni.usd
+from pxr import Usd, UsdGeom
+
+
+class SceneBrowserExtension(omni.ext.IExt):
+
+    def on_startup(self, ext_id):
+        self._window = ui.Window("Scene Browser", width=350, height=500)
+        with self._window.frame:
+            with ui.VStack(spacing=5):
+                # ── 按鈕列 ──
+                with ui.HStack(height=30):
+                    ui.Button("+ Sphere", clicked_fn=self._add_sphere)
+                    ui.Button("+ Cube", clicked_fn=self._add_cube)
+                    ui.Button("Refresh", clicked_fn=self._refresh)
+
+                # ── 場景樹 ──
+                self._tree = ui.TreeView(
+                    ui.SimpleStringModel(""),
+                    root_visible=False,
+                    header_visible=False
+                )
+                self._tree.set_selection_changed_fn(self._on_selection_changed)
+
+        self._refresh()
+
+    def on_shutdown(self):
+        if self._window:
+            self._window.destroy()
+
+    # ── 場景操作 ────────────────────────
+
+    def _get_stage(self):
+        return omni.usd.get_context().get_stage()
+
+    def _add_sphere(self):
+        stage = self._get_stage()
+        if not stage:
+            return
+        path = omni.usd.get_stage_next_free_path(stage, "/World/Sphere", False)
+        omni.kit.commands.execute("CreatePrim",
+            prim_type="Sphere", prim_path=path)
+        self._refresh()
+
+    def _add_cube(self):
+        stage = self._get_stage()
+        if not stage:
+            return
+        path = omni.usd.get_stage_next_free_path(stage, "/World/Cube", False)
+        omni.kit.commands.execute("CreatePrim",
+            prim_type="Cube", prim_path=path)
+        self._refresh()
+
+    def _refresh(self):
+        stage = self._get_stage()
+        if not stage:
+            return
+
+        model = self._tree.model
+        model.clear()
+
+        def add_children(parent_item, prim):
+            for child in prim.GetChildren():
+                name = child.GetName()
+                type_name = child.GetTypeName()
+                item = ui.SimpleStringModel(f"{name}  [{type_name}]")
+                parent_item.add_child(item)
+                add_children(item, child)
+
+        root = ui.SimpleStringModel("Stage")
+        model.add_child(root)
+        add_children(root, stage.GetPseudoRoot())
+
+    def _on_selection_changed(self, items):
+        if items:
+            print(f"Selected: {items[0].model.get_value_as_string()}")</code></pre>
+<hr>
+<h2>實戰二：自訂命令系統</h2>
+<h3>註冊自訂命令</h3>
+<pre><code class="language-python">import omni.kit.commands
+from pxr import UsdGeom, Gf
+
+
+def create_colored_cube(prim_path: str, color: tuple, size: float = 1.0):
+    """自訂命令：建立有顏色的立方體"""
+    stage = omni.usd.get_context().get_stage()
+    if not stage:
+        return
+
+    # 建立 Cube
+    cube = UsdGeom.Cube.Define(stage, prim_path)
+    cube.GetSizeAttr().Set(size)
+
+    # 設定顏色
+    gprim = UsdGeom.Gprim.Get(stage, prim_path)
+    gprim.GetDisplayColorAttr().Set([color])
+
+    return prim_path
+
+
+# 註冊命令
+omni.kit.commands.register("CreateColoredCube", create_colored_cube)
+
+# 使用命令
+omni.kit.commands.execute("CreateColoredCube",
+    prim_path="/World/RedCube",
+    color=(1.0, 0.0, 0.0),
+    size=2.0
+)</code></pre>
+<hr>
+<h2>實戰三：事件監聽</h2>
+<p>Kit 使用 Carbonite 事件匯流排：</p>
+<pre><code class="language-python">import omni.kit.app
+import carb.events
+
+class EventDemoExtension(omni.ext.IExt):
+
+    def on_startup(self, ext_id):
+        # ── 取得事件串流 ──
+        self._events = omni.kit.app.get_app().get_message_bus_event_stream()
+
+        # ── 訂閱 Stage 開啟事件 ──
+        self._sub_stage_open = omni.usd.get_context().get_stage_event_stream() \
+            .create_subscription_to_pop(self._on_stage_event, name="stage")
+
+        # ── 訂閱 Timeline 事件 ──
+        self._sub_timeline = self._events.create_subscription_to_pop(
+            self._on_timeline_event,
+            carb.events.type_from_string("omni.timeline.TimelineEvent")
+        )
+
+        # ── 訂閱 Selection 事件 ──
+        self._sub_selection = self._events.create_subscription_to_pop(
+            self._on_selection_changed,
+            carb.events.type_from_string("omni.kit.selection.SelectionChanged")
+        )
+
+    def _on_stage_event(self, event):
+        if event.type == int(omni.usd.StageEventType.OPENED):
+            print("Stage opened!")
+        elif event.type == int(omni.usd.StageEventType.CLOSED):
+            print("Stage closed!")
+
+    def _on_timeline_event(self, event):
+        current_frame = event.payload.get("currentTime", 0)
+        is_playing = event.payload.get("isPlaying", False)
+        # print(f"Frame: {current_frame}, Playing: {is_playing}")
+
+    def _on_selection_changed(self, event):
+        selection = omni.kit.selection.get_selection()
+        prims = selection.get_selected_prim_paths()
+        print(f"Selected: {prims}")
+
+    def on_shutdown(self):
+        self._sub_stage_open = None
+        self._sub_timeline = None
+        self._sub_selection = None</code></pre>
+<hr>
+<h2>實戰四：Settings（設定系統）</h2>
+<p>Extension 可以持久化設定，使用者可在 Preference 中修改。</p>
+<h3>extension.toml 中宣告設定</h3>
+<pre><code class="language-toml">[settings]
+app/exts/omni.example.my_tool/default_color = [1.0, 0.0, 0.0]
+app/exts/omni.example.my_tool/auto_refresh = true
+app/exts/omni.example.my_tool/refresh_interval = 5</code></pre>
+<h3>Python 中讀寫設定</h3>
+<pre><code class="language-python">import omni.kit.settings
+import carb.settings
+
+class SettingsDemoExtension(omni.ext.IExt):
+
+    def on_startup(self, ext_id):
+        # ── 讀取設定（key 對應 extension.toml） ──
+        self._settings = carb.settings.acquire_settings_interface()
+
+        default_color = self._settings.get_as_float3(
+            "app/exts/omni.example.my_tool/default_color"
+        )
+        auto_refresh = self._settings.get_as_bool(
+            "app/exts/omni.example.my_tool/auto_refresh"
+        )
+        interval = self._settings.get_as_int(
+            "app/exts/omni.example.my_tool/refresh_interval"
+        )
+
+        print(f"Color: {default_color}, Auto: {auto_refresh}, Interval: {interval}")
+
+        # ── 寫入設定 ──
+        self._settings.set_float3(
+            "app/exts/omni.example.my_tool/default_color",
+            (0.0, 1.0, 0.0)
+        )
+
+        # ── 監聽設定變化 ──
+        self._settings_sub = omni.kit.settings.subscribe(
+            "app/exts/omni.example.my_tool/", self._on_setting_changed
+        )
+
+    def _on_setting_changed(self, key, new_value):
+        print(f"Setting changed: {key} = {new_value}")
+
+    def on_shutdown(self):
+        self._settings_sub = None</code></pre>
+<hr>
+<h2>實戰五：USD 屬性編輯面板</h2>
+<p>完整的 Extension 實作 — 讀取選中 Prim 的屬性並提供編輯介面：</p>
+<pre><code class="language-python">import omni.ext
+import omni.ui as ui
+import omni.usd
+import omni.kit.commands
+from pxr import Usd, UsdGeom, Sdf, Gf
+
+
+class PropertyEditorExtension(omni.ext.IExt):
+
+    def on_startup(self, ext_id):
+        self._window = ui.Window("Property Editor", width=350, height=400)
+        self._fields = {}  # path → widget
+
+        self._build_ui()
+
+        # 監聽 selection 變化
+        self._events = omni.kit.app.get_app().get_message_bus_event_stream()
+        self._sel_sub = omni.kit.selection.get_selection().subscribe_to_change_stream(
+            self._on_selection_changed
+        )
+
+    def _build_ui(self):
+        with self._window.frame:
+            with ui.ScrollingFrame():
+                with ui.VStack(spacing=10, height=0):
+                    ui.Label("Property Editor", style={"font_size": 18})
+
+                    self._prim_path_label = ui.Label("No prim selected")
+
+                    # Transform
+                    ui.Label("Transform", style={"font_size": 14})
+                    with ui.HStack():
+                        ui.Label("Translate X:")
+                        self._tx = ui.FloatDrag(min=-1000, max=1000)
+                        self._tx.model.add_value_changed_fn(
+                            lambda m: self._set_transform("translate", 0, m.get_value_as_float())
+                        )
+                    with ui.HStack():
+                        ui.Label("Translate Y:")
+                        self._ty = ui.FloatDrag(min=-1000, max=1000)
+                    with ui.HStack():
+                        ui.Label("Translate Z:")
+                        self._tz = ui.FloatDrag(min=-1000, max=1000)
+
+                    # Sphere properties
+                    ui.Label("Sphere", style={"font_size": 14})
+                    with ui.HStack():
+                        ui.Label("Radius:")
+                        self._radius = ui.FloatDrag(min=0, max=1000)
+                        self._radius.model.add_value_changed_fn(
+                            lambda m: self._set_radius(m.get_value_as_float())
+                        )
+
+    def _on_selection_changed(self):
+        selection = omni.kit.selection.get_selection()
+        paths = selection.get_selected_prim_paths()
+        if not paths:
+            self._prim_path_label.text = "No prim selected"
+            return
+
+        path = paths[0]
+        self._prim_path_label.text = str(path)
+
+        stage = omni.usd.get_context().get_stage()
+        prim = stage.GetPrimAtPath(path)
+        if not prim:
+            return
+
+        # 讀取並顯示 Transform
+        xform = UsdGeom.Xformable(prim)
+        ops = xform.GetOrderedXformOps()
+        for op in ops:
+            if op.GetOpName() == "xformOp:translate":
+                val = op.Get()
+                self._tx.model.set_value(val[0] if val else 0)
+            # ... 可擴充 rotate, scale
+
+        # 讀取並顯示 Radius
+        radius_attr = prim.GetAttribute("radius")
+        if radius_attr:
+            val = radius_attr.Get()
+            if val:
+                self._radius.model.set_value(val)
+
+    def _set_transform(self, op_name: str, index: int, value: float):
+        # 用命令系統做 undoable 編輯
+        paths = omni.kit.selection.get_selection().get_selected_prim_paths()
+        if not paths:
+            return
+        omni.kit.commands.execute("ChangeProperty",
+            prop_path=Sdf.Path(f"{paths[0]}.xformOp:{op_name}"),
+            value=Gf.Vec3d(0, 0, 0),  # 簡化示範
+            prev=None
+        )
+
+    def _set_radius(self, value: float):
+        paths = omni.kit.selection.get_selection().get_selected_prim_paths()
+        if not paths:
+            return
+        omni.kit.commands.execute("ChangeProperty",
+            prop_path=Sdf.Path(f"{paths[0]}.radius"),
+            value=value,
+            prev=None
+        )
+
+    def on_shutdown(self):
+        self._sel_sub = None
+        if self._window:
+            self._window.destroy()</code></pre>
+<hr>
+<h2>Extension 開發除錯技巧</h2>
+<h3>1. Script Editor（內建 Python Console）</h3>
+<pre><code>Window → Script Editor  (omni.kit.window.script_editor)</code></pre>
+<p>直接在執行中的 Kit 測試 Python 程式碼。</p>
+<h3>2. 熱重載 Extension</h3>
+<pre><code>Window → Extensions → 找到你的 Extension → 停用 → 啟用</code></pre>
+<p>或使用 Script Editor：</p>
+<pre><code class="language-python">import omni.kit.app
+mgr = omni.kit.app.get_app().get_extension_manager()
+mgr.set_extension_enabled("omni.example.my_tool", False)
+mgr.set_extension_enabled("omni.example.my_tool", True)</code></pre>
+<h3>3. Logging</h3>
+<pre><code class="language-python">import carb
+carb.log_info("Info message")
+carb.log_warn("Warning message")
+carb.log_error("Error message")</code></pre>
+<h3>4. 檢查 Extension 狀態</h3>
+<pre><code class="language-python">mgr = omni.kit.app.get_app().get_extension_manager()
+exts = mgr.get_extensions()
+for ext_id, data in exts.items():
+    enabled = mgr.is_extension_enabled(ext_id)
+    print(f"{ext_id}: {'✓' if enabled else '✗'}")</code></pre>
+<hr>
+<h2>Extension 發布</h2>
+<h3>發布到 Local Registry</h3>
+<pre><code class="language-bash"># 安裝 kit 工具
+./kit --empty --exec "omni.kit.pip_archive.pack_extension('path/to/extension')"</code></pre>
+<h3>發布到 Omniverse Registry</h3>
+<p>需要在 extension.toml 中加入：</p>
+<pre><code class="language-toml">[repository]
+url = "https://&lt;your-nucleus-server&gt;/exts/"</code></pre>
+<hr>
+<h2>學習檢查</h2>
+<ul>
+<li>[ ] 建立一個 Extension，加入按鈕建立 Prim</li>
+<li>[ ] 監聽 Selection 事件並顯示選中的 Prim 路徑</li>
+<li>[ ] 使用 Setting 儲存使用者偏好</li>
+<li>[ ] 用 <code>omni.kit.commands</code> 做 undoable 操作</li>
+<li>[ ] 在 Script Editor 中熱重載 Extension</li>
+</ul>
+<hr>
+<p>下一課：<a href="../nvidia-omniverse/05-digital-twin-streaming.md" target="_blank" rel="noopener">Lesson 05 — Digital Twin 應用：Kit App Streaming</a></p>
+  </div>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-sm text-slate-600 space-y-2">
+    <p>© 2026 Kirk — 全端開發 × AI 自動化</p>
+    <p>有專案想法？<a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="text-brand-400">聯絡我</a></p>
+  </footer>
+</article>
+
+</body>
+</html>
