@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenUSD 基礎概念 — 3D 場景描述框架入門 — Kirk.dev 技術部落格</title>
+  <meta name="description" content="OpenUSD 基礎概念 — 3D 場景描述框架入門 — Kirk 的技術筆記與開發心得。全端開發、AI 自動化、量化交易、3D 圖學。">
+  <meta property="og:title" content="OpenUSD 基礎概念 — 3D 場景描述框架入門">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-10-openusd-fundamentals.html">
+  <link rel="canonical" href="https://liver5274-kirk.github.io/portfolio-landing/blog/posts/2026-05-10-openusd-fundamentals.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── 文章內容排版 ── */
+    .prose { max-width: 65ch; }
+    .prose h1 { font-size: 2rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; color: #e2e8f0; }
+    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; color: #e2e8f0; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; }
+    .prose h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+    .prose a { color: #47c07b; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #7cd9a2; }
+    .prose strong { color: #e2e8f0; font-weight: 600; }
+    .prose code { background: #1e293b; color: #7cd9a2; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .prose pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+    .prose pre code { background: none; color: #cbd5e1; padding: 0; font-size: 0.85rem; line-height: 1.6; }
+    .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; color: #94a3b8; }
+    .prose li { margin-bottom: 0.35rem; line-height: 1.65; }
+    .prose blockquote { border-left: 3px solid #22a55e; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(34,165,94,0.05); border-radius: 0 6px 6px 0; }
+    .prose blockquote p { color: #94a3b8; margin: 0; }
+    .prose hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .prose th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #1e293b; color: #94a3b8; }
+    .prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    /* ── Callout ── */
+    .callout { border-left-width: 3px; padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .callout-note { background: rgba(59,130,246,0.08); border-color: #3b82f6; }
+    .callout-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+    .callout-tip { background: rgba(34,197,94,0.08); border-color: #22c55e; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: #06b6d4; }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+    .callout-example { background: rgba(139,92,246,0.08); border-color: #8b5cf6; }
+    .callout-header { font-weight: 600; margin-bottom: 0.35rem; color: #cbd5e1; }
+    .callout-body p { margin: 0; }
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 0.15em 0.6em; font-size: 0.75rem; background: #0f172a; color: #47c07b; border: 1px solid #1e293b; border-radius: 999px; margin-right: 0.35rem; }
+    /* ── Back link ── */
+    .back-link { color: #64748b; font-size: 0.85rem; }
+    .back-link:hover { color: #47c07b; }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/" class="text-brand-400 font-bold text-lg tracking-tight no-underline">Kirk<span class="text-slate-400 font-normal">.dev</span></a>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#works" class="hover:text-brand-400 transition no-underline">作品</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#skills" class="hover:text-brand-400 transition no-underline">技能</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="text-brand-400 transition no-underline">部落格</a>
+      <a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="hover:text-brand-400 transition no-underline">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="pt-28 pb-20 px-6 max-w-3xl mx-auto">
+  <header class="mb-10">
+    <a href="https://liver5274-kirk.github.io/portfolio-landing/blog/" class="back-link mb-4 inline-block">← 所有文章</a>
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100 mb-3">OpenUSD 基礎概念 — 3D 場景描述框架入門</h1>
+    <div class="flex items-center gap-4 text-sm text-slate-500">
+      <span>2026-05-10</span>
+      <span>·</span>
+      <span>Kirk</span>
+    </div>
+    <div class="mt-3"><span class="tag">OpenUSD</span><span class="tag">3D</span><span class="tag">NVIDIA</span><span class="tag">Omniverse</span></div>
+  </header>
+
+  <div class="prose">
+<h1>Lesson 01 — OpenUSD 基礎概念</h1>
+<blockquote>
+<p>來源：openusd.org 官方文檔 v26.05</p>
+</blockquote>
+<hr>
+<h2>什麼是 USD？</h2>
+<p>USD (Universal Scene Description) 是 Pixar 開發的開源 3D 場景描述框架，用於：</p>
+<ul>
+<li><strong>交換</strong> 3D 資產（模型、動畫、材質）</li>
+<li><strong>組裝</strong> 多個資產到虛擬場景中</li>
+<li><strong>非破壞性編輯</strong> 場景（override 機制）</li>
+<li><strong>跨應用協作</strong> — Maya / Houdini / Blender / UE5 / Omniverse 共用同一場景</li>
+</ul>
+<hr>
+<h2>五大核心概念</h2>
+<h3>1. Stage（場景圖）</h3>
+<pre><code>Stage = 根 USD 檔案 + 所有它引用/疊加的圖層 → 合成後的完整場景</code></pre>
+<ul>
+<li>對應類別：<code>UsdStage</code></li>
+<li>負責：管理命名空間、快取、記憶體中的場景遍歷</li>
+<li><code>UsdStage::Save()</code> 把修改寫回檔案</li>
+</ul>
+<h3>2. Prim（基本容器）</h3>
+<pre><code>Prim = USD 場景樹中的節點</code></pre>
+<ul>
+<li>每個 Prim 可以有：</li>
+<li>子 Prim（形成命名空間階層）</li>
+<li><strong>Attributes</strong>（資料，如位置、顏色）</li>
+<li><strong>Relationships</strong>（指向其他 Prim）</li>
+<li><strong>Metadata</strong>（如 kind、active 狀態）</li>
+<li>對應類別：<code>UsdPrim</code></li>
+<li>Prim 有 <strong>Specifier</strong>（def / over / class）定義角色</li>
+<li>Prim 可能有 <strong>schema typeName</strong> 決定資料結構</li>
+</ul>
+<pre><code># USD ASCII 範例
+def Xform "World" {
+    def Sphere "BigBall" {
+        double radius = 100
+    }
+}</code></pre>
+<p>→ 路徑：<code>/World/BigBall</code></p>
+<h3>3. Layer（圖層）</h3>
+<pre><code>Layer = USD 的最小持久化單位（一個檔案）</code></pre>
+<ul>
+<li>對應類別：<code>SdfLayer</code></li>
+<li>檔案格式：</li>
+<li><code>.usda</code> — 文字格式（human-readable ASCII）</li>
+<li><code>.usdc</code> — 二進位格式（高效、預設）</li>
+<li><code>.usd</code> — 可以是文字或二進位</li>
+<li><code>.usdz</code> — 打包格式（zip，含材質貼圖）</li>
+</ul>
+<ul>
+<li>Layer 之間的關係由 <strong>Composition Arcs</strong> 定義</li>
+</ul>
+<h3>4. Attribute（屬性）</h3>
+<pre><code>Attribute = 具型別的屬性，存儲在 Prim 上</code></pre>
+<ul>
+<li>每個 Attribute 有：</li>
+<li><strong>型別</strong>（double, float3, token, string, asset...）</li>
+<li><strong>預設值</strong>（default）</li>
+<li><strong>動畫值</strong>（timeSamples：時間→值的映射）</li>
+</ul>
+<pre><code>def Sphere "BigBall" {
+    double radius = 100             # default value
+    double radius.timeSamples = {   # animated values
+        1: 100,
+        24: 500,
+    }
+}</code></pre>
+<p>→ frame 1 時 radius=100，frame 24 時 radius=500，其餘內插</p>
+<h3>5. Composition（合成）</h3>
+<pre><code>Composition = 把多個 Layer 依照 Composition Arcs 合併成一個 Stage 的過程</code></pre>
+<p><strong>四種 Composition Arcs（由弱到強）：</strong></p>
+<table>
+<thead><tr><th>Arc</th><th>用途</th><th>指令</th></tr></thead>
+<tbody>
+<tr><td><strong>SubLayers</strong></td><td>多藝術家同時編輯同場景</td><td><code>subLayers = [@layer1.usd@, @layer2.usd@]</code></td></tr>
+<tr><td><strong>References</strong></td><td>引用外部資產</td><td><code>references = @asset.usd@</path></code></td></tr>
+<tr><td><strong>Payloads</strong></td><td>延遲載入（優化效能）</td><td><code>payload = @heavy_asset.usd@</code></td></tr>
+<tr><td><strong>Inherits</strong></td><td>繼承 class 定義</td><td><code>inherits = </ClassName></code></td></tr>
+<tr><td><strong>Specializes</strong></td><td>特化（最強限制）</td><td><code>specializes = </BaseModel></code></td></tr>
+<tr><td><strong>VariantSets</strong></td><td>變體切換（如 LOD）</td><td><code>variantSet "lod" = { "high" ... "low" ... }</code></td></tr>
+</tbody></table>
+<p><strong>LIVRPS 強度順序（弱→強）：</strong></p>
+<p><code>Local > Inherits > Variants > References > Payloads > Specializes > SubLayers</code></p>
+<p>越右邊的意見越強，會覆蓋左邊的同名屬性。</p>
+<hr>
+<h2>檔案結構 vs 場景結構</h2>
+<pre><code># 檔案系統
+assets/
+├── room.usd          ← 根 Layer（定義 subLayers）
+├── furniture.usd     ← 被 subLayer 疊加
+└── chair.usd         ← 被 reference 引用
+
+# room.usd 內容
+#usda 1.0
+(
+    subLayers = [@furniture.usd@]
+)
+def Xform "Room" {
+    def "Chair1" (references = @chair.usd@) {}
+    def "Chair2" (references = @chair.usd@) {}
+}</code></pre>
+<p>開啟 <code>room.usd</code> 得到 Stage：</p>
+<pre><code>/Room
+/Room/Chair1    ← 從 chair.usd 合成
+/Room/Chair2    ← 從 chair.usd 合成（另一實例）
+/Furniture/...  ← 從 furniture.usd 疊加</code></pre>
+<hr>
+<h2>Python API 快速入門</h2>
+<pre><code class="language-python">from pxr import Usd, UsdGeom, Sdf
+
+# 1. 建立 Stage
+stage = Usd.Stage.CreateNew("hello.usda")
+
+# 2. 建立 Prim（Xform = Transform 容器）
+xform = UsdGeom.Xform.Define(stage, "/World")
+
+# 3. 建立 Sphere Prim + 設屬性
+sphere = UsdGeom.Sphere.Define(stage, "/World/MySphere")
+sphere.GetRadiusAttr().Set(50.0)
+
+# 4. 儲存
+stage.GetRootLayer().Save()
+
+# 5. 開啟已有 Stage
+stage = Usd.Stage.Open("hello.usda")
+
+# 6. 遍歷所有 Prim
+for prim in stage.Traverse():
+    print(prim.GetPath())  # /World, /World/MySphere
+
+# 7. 讀取屬性
+sphere = stage.GetPrimAtPath("/World/MySphere")
+radius = sphere.GetAttribute("radius").Get()
+print(radius)  # 50.0</code></pre>
+<hr>
+<h2>學習檢查</h2>
+<ul>
+<li>[ ] Stage 與 Layer 的關係是什麼？</li>
+<li>[ ] Prim 可以包含哪些東西？</li>
+<li>[ ] Composition Arcs 有哪些？強度順序？</li>
+<li>[ ] <code>.usda</code> 和 <code>.usdc</code> 的差異？</li>
+<li>[ ] 寫一個 Python 腳本建立含有 cube + sphere 的場景</li>
+</ul>
+<hr>
+<p>下一課：<a href="../nvidia-omniverse/02-usd-python-api.md" target="_blank" rel="noopener">Lesson 02 — USD Python API 深入</a></p>
+  </div>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-sm text-slate-600 space-y-2">
+    <p>© 2026 Kirk — 全端開發 × AI 自動化</p>
+    <p>有專案想法？<a href="https://liver5274-kirk.github.io/portfolio-landing/#contact" class="text-brand-400">聯絡我</a></p>
+  </footer>
+</article>
+
+</body>
+</html>
