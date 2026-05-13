@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kirk | 全端開發 × AI 自動化</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eefbf3', 100: '#d6f5e0', 200: '#b0eac5', 300: '#7cd9a2', 400: '#47c07b', 500: '#22a55e', 600: '#148549', 700: '#116a3d', 800: '#105433', 900: '#0e452c', 950: '#072615' },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 700: '#334155', 800: '#1e293b', 850: '#172033', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-surface-950 text-slate-200 font-sans antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <span class="text-brand-400 font-bold text-lg tracking-tight">Kirk<span class="text-slate-400 font-normal">.dev</span></span>
+    <div class="hidden md:flex gap-8 text-sm text-slate-400">
+      <a href="#works" class="hover:text-brand-400 transition">作品</a>
+      <a href="#skills" class="hover:text-brand-400 transition">技能</a>
+      <a href="#ai" class="hover:text-brand-400 transition">AI 加速</a>
+      <a href="#contact" class="hover:text-brand-400 transition">聯繫</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-32 pb-20 px-6 max-w-6xl mx-auto">
+  <div class="flex flex-col lg:flex-row items-center gap-12">
+    <div class="flex-1 space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-950/50 border border-brand-800 text-brand-400 text-xs font-medium">
+        <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span> 開放接案中
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+        用 <span class="text-brand-400">AI 加速</span> 的全端開發者
+      </h1>
+      <p class="text-lg text-slate-400 max-w-xl leading-relaxed">
+        專注 Remix 全端開發 × AI Agent 自動化流程。<br>
+        不只是寫 code，而是用 AI 讓開發效率翻倍，幫你更快上線、更省預算。
+      </p>
+      <div class="flex gap-4 pt-2">
+        <a href="#works" class="px-6 py-3 bg-brand-500 hover:bg-brand-400 text-surface-950 font-semibold rounded-lg transition text-sm">看作品 →</a>
+        <a href="#contact" class="px-6 py-3 border border-slate-700 hover:border-brand-500 text-slate-300 rounded-lg transition text-sm">聯絡我</a>
+      </div>
+    </div>
+    <div class="flex-1 flex justify-center">
+      <div class="w-64 h-64 md:w-80 md:h-80 rounded-2xl bg-gradient-to-br from-brand-900 via-surface-800 to-slate-900 border border-slate-700 flex items-center justify-center shadow-2xl shadow-brand-950/30">
+        <div class="text-center space-y-2">
+          <div class="text-6xl">⚡</div>
+          <div class="text-slate-500 text-xs font-mono">AI Agent 賦能開發</div>
+          <div class="text-brand-400 font-mono text-2xl font-bold">2-3x</div>
+          <div class="text-slate-500 text-xs">開發效率提升</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="py-12 px-6 border-y border-slate-800 bg-surface-900/50">
+  <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+    <div><div class="text-3xl font-bold text-brand-400">5+</div><div class="text-xs text-slate-500 mt-1">上線專案</div></div>
+    <div><div class="text-3xl font-bold text-brand-400">Remix</div><div class="text-xs text-slate-500 mt-1">主力框架</div></div>
+    <div><div class="text-3xl font-bold text-brand-400">AI Agent</div><div class="text-xs text-slate-500 mt-1">開發加速器</div></div>
+    <div><div class="text-3xl font-bold text-brand-400">TW</div><div class="text-xs text-slate-500 mt-1">台灣遠端</div></div>
+  </div>
+</section>
+
+<!-- WORKS -->
+<section id="works" class="py-20 px-6 max-w-6xl mx-auto">
+  <div class="text-center mb-14">
+    <h2 class="text-3xl font-bold mb-3">精選作品</h2>
+    <p class="text-slate-500 max-w-md mx-auto">從 ERP 系統到股市 AI 監控，全端到自動化的實戰經驗</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-6">
+
+    <!-- OrderFlow -->
+    <div class="group bg-surface-900 rounded-xl border border-slate-800 hover:border-brand-700 transition overflow-hidden">
+      <div class="h-48 bg-gradient-to-br from-surface-800 to-slate-900 flex items-center justify-center border-b border-slate-800">
+        <div class="text-center">
+          <i class="fa-solid fa-boxes-stacked text-5xl text-brand-500 mb-2"></i>
+          <div class="text-slate-500 text-xs font-mono">Remix v2 · Prisma · React</div>
+        </div>
+      </div>
+      <div class="p-6 space-y-3">
+        <div class="flex items-center gap-2"><span class="px-2 py-0.5 text-[10px] rounded bg-brand-950 text-brand-400 border border-brand-900 font-mono">全端</span><span class="px-2 py-0.5 text-[10px] rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono">ERP</span></div>
+        <h3 class="text-lg font-bold">OrderFlow — 企業資源管理系統</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">訂單管理 / 庫存追蹤 / 供應商管理。Remix 全端架構，Prisma ORM 資料層，響應式 UI，適合中小企業內部使用。</p>
+        <div class="flex gap-2 text-xs text-slate-600 font-mono">React 18 · TypeScript · Tailwind · SQLite</div>
+      </div>
+    </div>
+
+    <!-- TW Stock Monitor -->
+    <div class="group bg-surface-900 rounded-xl border border-slate-800 hover:border-brand-700 transition overflow-hidden">
+      <div class="h-48 bg-gradient-to-br from-slate-900 to-surface-800 flex items-center justify-center border-b border-slate-800">
+        <div class="text-center">
+          <i class="fa-solid fa-chart-line text-5xl text-brand-500 mb-2"></i>
+          <div class="text-slate-500 text-xs font-mono">Python · Cron · GH Actions</div>
+        </div>
+      </div>
+      <div class="p-6 space-y-3">
+        <div class="flex items-center gap-2"><span class="px-2 py-0.5 text-[10px] rounded bg-brand-950 text-brand-400 border border-brand-900 font-mono">量化</span><span class="px-2 py-0.5 text-[10px] rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono">即時監控</span></div>
+        <h3 class="text-lg font-bold">台股即時監控系統</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">3661 世芯-KY 五檔掛單分析、主力煙霧彈偵測、背離訊號預警。全自動排程監控 + Telegram 即時推播。</p>
+        <div class="flex gap-2 text-xs text-slate-600 font-mono">Python · twstock · Telegram Bot · Linux Cron</div>
+      </div>
+    </div>
+
+    <!-- NVIDIA AI Bot -->
+    <div class="group bg-surface-900 rounded-xl border border-slate-800 hover:border-brand-700 transition overflow-hidden">
+      <div class="h-48 bg-gradient-to-br from-surface-800 to-slate-900 flex items-center justify-center border-b border-slate-800">
+        <div class="text-center">
+          <i class="fa-solid fa-robot text-5xl text-brand-500 mb-2"></i>
+          <div class="text-slate-500 text-xs font-mono">GitHub Actions · AI 繪圖</div>
+        </div>
+      </div>
+      <div class="p-6 space-y-3">
+        <div class="flex items-center gap-2"><span class="px-2 py-0.5 text-[10px] rounded bg-brand-950 text-brand-400 border border-brand-900 font-mono">AI</span><span class="px-2 py-0.5 text-[10px] rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono">自動化</span></div>
+        <h3 class="text-lg font-bold">NVIDIA AI 每日圖片生成 Bot</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">每日自動生成 AI 圖片並發布。串接 GitHub Actions 排程 + ComfyUI，全自動運作零人工介入。</p>
+        <div class="flex gap-2 text-xs text-slate-600 font-mono">Python · ComfyUI · GH Actions · 每日自動化</div>
+      </div>
+    </div>
+
+    <!-- Telegram Bots -->
+    <div class="group bg-surface-900 rounded-xl border border-slate-800 hover:border-brand-700 transition overflow-hidden">
+      <div class="h-48 bg-gradient-to-br from-slate-900 to-surface-800 flex items-center justify-center border-b border-slate-800">
+        <div class="text-center">
+          <i class="fa-brands fa-telegram text-5xl text-brand-500 mb-2"></i>
+          <div class="text-slate-500 text-xs font-mono">Python · AI 中控</div>
+        </div>
+      </div>
+      <div class="p-6 space-y-3">
+        <div class="flex items-center gap-2"><span class="px-2 py-0.5 text-[10px] rounded bg-brand-950 text-brand-400 border border-brand-900 font-mono">Bot</span><span class="px-2 py-0.5 text-[10px] rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono">雙系統</span></div>
+        <h3 class="text-lg font-bold">Telegram 雙 Bot 系統</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">自訂功能 Bot + Hermes AI Gateway。即時通知、指令控制、AI 對話中控台，完整的自動化通訊中樞。</p>
+        <div class="flex gap-2 text-xs text-slate-600 font-mono">Python · Hermes Agent · Webhook · WSL</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- AI ADVANTAGE -->
+<section id="ai" class="py-20 px-6 bg-surface-900/50 border-y border-slate-800">
+  <div class="max-w-4xl mx-auto text-center space-y-10">
+    <div>
+      <h2 class="text-3xl font-bold mb-3">不只會寫 Code，我用 AI Agent 寫 Code</h2>
+      <p class="text-slate-500 max-w-lg mx-auto">這不是口號，是我每天的開發方式</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6 text-left">
+      <div class="bg-surface-900 rounded-xl p-6 border border-slate-800 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-brand-950 flex items-center justify-center"><i class="fa-solid fa-bolt text-brand-400"></i></div>
+        <h4 class="font-bold">2-3 倍開發速度</h4>
+        <p class="text-sm text-slate-400">Kanban 多助手協作：研究者 + 分析師 + 架構師三線並行，一個功能從規劃到部署，原本三天的現在一天做完。</p>
+      </div>
+      <div class="bg-surface-900 rounded-xl p-6 border border-slate-800 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-brand-950 flex items-center justify-center"><i class="fa-solid fa-shield-halved text-brand-400"></i></div>
+        <h4 class="font-bold">自動化品質把關</h4>
+        <p class="text-sm text-slate-400">AI 自動 code review + 測試生成 + 安全掃描。人寫的 code 會有盲點，AI 不看人情只認邏輯。</p>
+      </div>
+      <div class="bg-surface-900 rounded-xl p-6 border border-slate-800 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-brand-950 flex items-center justify-center"><i class="fa-solid fa-clock text-brand-400"></i></div>
+        <h4 class="font-bold">24/7 自動化維運</h4>
+        <p class="text-sm text-slate-400">Cron + Telegram 即時警報 + 自動修復腳本。系統出問題半夜也會通知你——但通常 AI 在你醒來前就修好了。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="py-20 px-6 max-w-4xl mx-auto">
+  <div class="text-center mb-14">
+    <h2 class="text-3xl font-bold mb-3">技術棧</h2>
+    <p class="text-slate-500">日常開發的主力武器</p>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-brands fa-react text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">Remix / React</div>
+      <div class="text-[10px] text-slate-600">全端框架</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-solid fa-database text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">Prisma / SQL</div>
+      <div class="text-[10px] text-slate-600">資料層</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-brands fa-python text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">Python</div>
+      <div class="text-[10px] text-slate-600">自動化 / 量化</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-solid fa-code-branch text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">Git / CI/CD</div>
+      <div class="text-[10px] text-slate-600">版本協作</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-brands fa-linux text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">Linux / WSL</div>
+      <div class="text-[10px] text-slate-600">部署環境</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-solid fa-brain text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">LLM / AI Agent</div>
+      <div class="text-[10px] text-slate-600">AI 整合</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-brands fa-telegram text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">Telegram Bot</div>
+      <div class="text-[10px] text-slate-600">即時通訊</div>
+    </div>
+    <div class="bg-surface-900 rounded-xl p-5 border border-slate-800 text-center space-y-2 hover:border-brand-700 transition">
+      <i class="fa-solid fa-chart-simple text-2xl text-brand-400"></i>
+      <div class="font-semibold text-sm">量化交易</div>
+      <div class="text-[10px] text-slate-600">股市分析</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="py-20 px-6 max-w-2xl mx-auto text-center space-y-8">
+  <h2 class="text-3xl font-bold">開始合作</h2>
+  <p class="text-slate-500">有專案想法？需要全端開發或 AI 自動化？<br>來聊聊你的需求，我幫你評估可行性與預算。</p>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <a href="https://t.me/SK_Kirk" class="bg-surface-900 border border-slate-800 hover:border-brand-700 rounded-xl p-5 transition space-y-2 group">
+      <i class="fa-brands fa-telegram text-2xl text-brand-400 group-hover:scale-110 transition"></i>
+      <div class="font-semibold text-sm">Telegram</div>
+      <div class="text-[10px] text-slate-600">@SK_Kirk</div>
+    </a>
+    <a href="https://github.com/liver5274-kirk" target="_blank" class="bg-surface-900 border border-slate-800 hover:border-brand-700 rounded-xl p-5 transition space-y-2 group">
+      <i class="fa-brands fa-github text-2xl text-brand-400 group-hover:scale-110 transition"></i>
+      <div class="font-semibold text-sm">GitHub</div>
+      <div class="text-[10px] text-slate-600">liver5274-kirk</div>
+    </a>
+    <a href="mailto:kirk.shangkuan@gmail.com" class="bg-surface-900 border border-slate-800 hover:border-brand-700 rounded-xl p-5 transition space-y-2 group">
+      <i class="fa-solid fa-envelope text-2xl text-brand-400 group-hover:scale-110 transition"></i>
+      <div class="font-semibold text-sm">Email</div>
+      <div class="text-[10px] text-slate-600">來信洽詢</div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-8 border-t border-slate-800 text-center text-xs text-slate-600">
+  © 2026 Kirk — 全端開發 × AI 自動化 · Built with Tailwind CSS
+</footer>
+
+</body>
+</html>
